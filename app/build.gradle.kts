@@ -109,6 +109,7 @@ dependencies {
     implementation(libs.androidx.navigation.ui)
     implementation(libs.androidx.navigation.dynamic)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.compose.hilt.navigation)
 
     // Firebase libraries
     implementation(platform(libs.firebase.bom))
@@ -118,4 +119,16 @@ dependencies {
     // Hilt for dependency injection
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+
+    implementation(libs.kotlinx.serialization)
+    implementation (libs.gson)
+
+    // coil for image loader
+    implementation(libs.coil.compose)
+    implementation(libs.coil.svg)
+
+    //lottie for animation
+    implementation(libs.lottie.compose)
+    //google fonts
+    implementation (libs.androidx.ui.text.google.fonts)
 }
