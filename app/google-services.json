@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "403994826255",
+    "project_id": "moodbloom-d0c2f",
+    "storage_bucket": "moodbloom-d0c2f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:403994826255:android:ff76c6333ca9c0284eb57a",
+        "android_client_info": {
+          "package_name": "com.example.moodbloom"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "403994826255-keqqjrq7gbn7aurlkfto20nsd6jppku3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.moodbloom",
+            "certificate_hash": "81a7b3e88733bcdbf244e386961000acf2190525"
+          }
+        },
+        {
+          "client_id": "403994826255-dm7hvtc6fu07bgr08rvtjd44ava4foue.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCl-0HPzMyk65TvWE35B_nUqeWA9cXtKYA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "403994826255-dm7hvtc6fu07bgr08rvtjd44ava4foue.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
