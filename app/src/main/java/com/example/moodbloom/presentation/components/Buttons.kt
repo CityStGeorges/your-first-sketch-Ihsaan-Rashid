@@ -91,7 +91,8 @@ fun TextButton(
     text: String = "Next",
     enabled: Boolean = true,
     primary: Boolean = true,
-    shape : Shape = MaterialTheme.shapes.large,    changeColorsOnDisable: Boolean = true,
+    shape : Shape = MaterialTheme.shapes.large,
+    changeColorsOnDisable: Boolean = true,
     textColor: Color = if(primary){MaterialTheme.colorScheme.onPrimary}else{MaterialTheme.colorScheme.onSecondary},
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     onClick: () -> Unit
@@ -175,7 +176,64 @@ fun LoginWithGoogleButton(
     )
 
 }
+@Composable
+fun LogoutButton(
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    primary: Boolean = false,
+    title: String = "Sign Out",
+    shape : Shape = MaterialTheme.shapes.large,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.Center,
+    changeColorsOnDisable: Boolean = true,
+    iconPainter:Int = R.drawable.ic_logout,
+    textColor: Color = if(primary){MaterialTheme.colorScheme.onPrimary}else{MaterialTheme.colorScheme.onSecondary},
+    onClick: () -> Unit,
+) {
 
+    BaseButton(
+        enabled = enabled,
+        primary = primary,
+        modifier = modifier,
+        shape=shape,
+        content = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = horizontalArrangement
+            ) {
+                if (horizontalArrangement == Arrangement.Center) {
+
+                    ResourceImage(
+                        image = iconPainter,
+                        modifier = Modifier.size(18.sdp),
+                    )
+                    SpacerWidth(width = 10.sdp)
+                    if (enabled){
+                        LabelLargeText(text = title, fontWeight = FontWeight.SemiBold,overrideColor = textColor)
+                    }else if(changeColorsOnDisable) {
+                        LabelLargeText(text = title, fontWeight = FontWeight.SemiBold,overrideColor = md_theme_light_onDisable)
+                    }else {
+                        LabelLargeText(text = title, fontWeight = FontWeight.SemiBold,overrideColor = textColor)
+                    }
+
+                } else {
+                    if (enabled){
+                        LabelLargeText(text = title, fontWeight = FontWeight.SemiBold,overrideColor = textColor)
+                    }else if(changeColorsOnDisable) {
+                        LabelLargeText(text = title, fontWeight = FontWeight.SemiBold,overrideColor =  md_theme_light_onDisable)
+                    }else {
+                        LabelLargeText(text = title, fontWeight = FontWeight.SemiBold,overrideColor = textColor)
+                    }
+                    ResourceImage(image = iconPainter, modifier = Modifier.size(18.sdp))
+                }
+
+            }
+
+        },
+        onClick = onClick
+    )
+
+}
 
 @Composable
 fun IconButton(

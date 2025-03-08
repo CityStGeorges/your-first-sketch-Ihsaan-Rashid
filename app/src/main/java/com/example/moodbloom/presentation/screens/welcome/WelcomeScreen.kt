@@ -1,14 +1,8 @@
 package com.example.moodbloom.presentation.screens.welcome
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,10 +21,9 @@ import com.example.moodbloom.presentation.components.TextButton
 import com.example.moodbloom.presentation.components.hpr
 import com.example.moodbloom.presentation.components.sdp
 import com.example.moodbloom.presentation.components.textSdp
-import com.example.moodbloom.ui.typo.DisplayLargeText
+import com.example.moodbloom.routes.ScreensRoute
 import com.example.moodbloom.ui.typo.HeadlineMediumText
 import com.example.moodbloom.ui.typo.LabelMediumText
-import kotlinx.coroutines.launch
 
 @Composable
 fun WelcomeScreenRoute(
@@ -60,12 +53,12 @@ internal fun WelcomeScreen(
                 shape = MaterialTheme.shapes.extraLarge,
                 text = "Sign Up",
                 onClick = {
-
+                    onNavigate(ScreensRoute.SignUp.route)
                 })
             SpacerHeight(2.hpr)
             TextButton(
                 shape = MaterialTheme.shapes.extraLarge, text = "Sign In", onClick = {
-
+                    onNavigate(ScreensRoute.Login.route)
                 })
             SpacerHeight(2.hpr)
             LoginWithGoogleButton(

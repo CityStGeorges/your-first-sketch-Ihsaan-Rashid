@@ -7,7 +7,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.moodbloom.presentation.screens.home.HomeScreenRoute
 import com.example.moodbloom.presentation.screens.login.LoginScreenRoute
+import com.example.moodbloom.presentation.screens.signup.SignUpScreenRoute
 import com.example.moodbloom.presentation.screens.splash.SplashRoute
 import com.example.moodbloom.presentation.screens.welcome.WelcomeScreenRoute
 import com.example.moodbloom.routes.ScreensRoute
@@ -33,8 +35,18 @@ fun MyAppNavHost(
                 navController.navigateToScreen(it)
             })
         }
- composable(route = ScreensRoute.Login.route) {
+        composable(route = ScreensRoute.Login.route) {
             LoginScreenRoute(onNavigate = {
+                navController.navigateToScreen(it)
+            })
+        }
+        composable(route = ScreensRoute.SignUp.route) {
+            SignUpScreenRoute(onNavigate = {
+                navController.navigateToScreen(it)
+            })
+        }
+        composable(route = ScreensRoute.Home.route) {
+            HomeScreenRoute(onNavigate = {
                 navController.navigateToScreen(it)
             })
         }
@@ -51,7 +63,7 @@ fun NavController.navigateToScreen(route: String, navOptions: NavOptions? = null
     }
 }
 
-fun NavController.navigateSplashToOther(route:String) {
+fun NavController.navigateSplashToOther(route: String) {
     navigate(route = route) {
         popUpTo(route = ScreensRoute.Splash.route) { inclusive = true }
     }

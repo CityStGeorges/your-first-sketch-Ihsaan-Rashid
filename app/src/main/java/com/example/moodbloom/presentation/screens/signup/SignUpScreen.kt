@@ -1,4 +1,4 @@
-package com.example.moodbloom.presentation.screens.login
+package com.example.moodbloom.presentation.screens.signup
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,25 +27,27 @@ import com.example.moodbloom.presentation.components.TextInputField
 import com.example.moodbloom.presentation.components.hpr
 import com.example.moodbloom.presentation.components.sdp
 import com.example.moodbloom.presentation.components.textSdp
-import com.example.moodbloom.routes.ScreensRoute
+import com.example.moodbloom.presentation.screens.login.SignUpViewModel
 import com.example.moodbloom.ui.typo.HeadlineMediumText
 
 @Composable
-fun LoginScreenRoute(
+fun SignUpScreenRoute(
     onNavigate: (String) -> Unit,
-    viewModel: LoginViewModel = hiltViewModel()
+    viewModel: SignUpViewModel = hiltViewModel()
 ) {
 
-    LoginScreen(onNavigate=onNavigate)
+    SignUpScreen(onNavigate=onNavigate)
 
 
 
 }
 
 @Composable
-internal fun LoginScreen(
+internal fun SignUpScreen(
     promptsViewModel: PromptsViewModel = hiltViewModel(), onNavigate: (String) -> Unit
 ) {
+    var name by remember { mutableStateOf("") }
+    var userName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -55,8 +57,24 @@ internal fun LoginScreen(
             SpacerHeight(7.hpr)
             ResourceImage(image = R.drawable.ic_logo, modifier = Modifier.height(12.hpr))
             SpacerHeight(5.hpr)
-            HeadlineMediumText(text = "Sign In", fontSize = 48.textSdp)
+            HeadlineMediumText(text = "Sign Up", fontSize = 48.textSdp)
             SpacerWeight(.5f)
+            TextInputField(
+                value = name,
+                onValueChange = { name = it },
+                placeholder = "Enter your name",
+                label = "Name",
+                inputType = InputType.IsLetterOrDigit
+            )
+            SpacerHeight(2.hpr)
+            TextInputField(
+                value = userName,
+                onValueChange = { userName = it },
+                placeholder = "Enter your username",
+                label = "Username",
+                inputType = InputType.IsLetterOrDigit
+            )
+            SpacerHeight(2.hpr)
             TextInputField(
                 value = email,
                 onValueChange = { email = it },
@@ -74,8 +92,8 @@ internal fun LoginScreen(
             )
             SpacerWeight(1f)
             TextButton(
-                shape = MaterialTheme.shapes.extraLarge, text = "Sign In", onClick = {
-                    onNavigate(ScreensRoute.Home.route)
+                shape = MaterialTheme.shapes.extraLarge, text = "Sign Up", onClick = {
+
                 })
             SpacerWeight(1f)
         }
@@ -84,6 +102,6 @@ internal fun LoginScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewLoginScreen() {
-    LoginScreen{}
+fun PreviewSignUpScreen() {
+    SignUpScreen{}
 }
