@@ -1,36 +1,39 @@
 package com.example.moodbloom.presentation.screens.home
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.moodbloom.R
+import com.example.moodbloom.domain.models.HomeOptionsModel
 import com.example.moodbloom.extension.SpacerHeight
 import com.example.moodbloom.extension.SpacerWeight
 import com.example.moodbloom.extension.SpacerWidth
-import com.example.moodbloom.presentation.components.LoginWithGoogleButton
 import com.example.moodbloom.presentation.components.LogoutButton
 import com.example.moodbloom.presentation.components.PromptsViewModel
 import com.example.moodbloom.presentation.components.ResourceImage
 import com.example.moodbloom.presentation.components.ScreenContainer
-import com.example.moodbloom.presentation.components.TextButton
 import com.example.moodbloom.presentation.components.hpr
+import com.example.moodbloom.presentation.components.safeClickable
 import com.example.moodbloom.presentation.components.sdp
 import com.example.moodbloom.presentation.components.textSdp
 import com.example.moodbloom.routes.ScreensRoute
 import com.example.moodbloom.ui.typo.HeadlineMediumText
-import com.example.moodbloom.ui.typo.LabelMediumText
-import com.example.moodbloom.ui.typo.TitleLargeText
 
 
 @Composable
@@ -47,6 +50,8 @@ internal fun HomeScreen(
 ) {
 
     val currentPrompt by promptsViewModel.currentPrompt.collectAsStateWithLifecycle()
+    var isNotificationEnable by remember { mutableStateOf(false) }
+    val listHomeOptions = getHomeOptions()
     ScreenContainer(currentPrompt = currentPrompt) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -64,46 +69,67 @@ internal fun HomeScreen(
             }
 
             SpacerHeight(5.hpr)
-            TextButton(
-                modifier = Modifier.padding(horizontal = 50.sdp),
-                shape = MaterialTheme.shapes.extraLarge,
-                text = "Log Daily Mood",
-                onClick = {
-                    onNavigate(ScreensRoute.SignUp.route)
-                })
-            SpacerHeight(2.hpr)
-            TextButton(
-                modifier = Modifier.padding(horizontal = 50.sdp),
-                shape = MaterialTheme.shapes.extraLarge, text = "Habit Tracker", onClick = {
-                    onNavigate(ScreensRoute.Login.route)
-                })
-            SpacerHeight(2.hpr)
-            TextButton(
-                modifier = Modifier.padding(horizontal = 50.sdp),
-                shape = MaterialTheme.shapes.extraLarge,
-                text = "Guided Breathing Exercises",
-                onClick = {
-                    onNavigate(ScreensRoute.Login.route)
-                })
-            SpacerHeight(2.hpr)
-            TextButton(
-                modifier = Modifier.padding(horizontal = 50.sdp),
-                shape = MaterialTheme.shapes.extraLarge, text = "Insights", onClick = {
-                    onNavigate(ScreensRoute.Login.route)
-                })
-
-
-            SpacerHeight(5.hpr)
-            TitleLargeText(text = "Turn On Notifications?")
-            SpacerHeight(5.hpr)
-            /* TitleLargeText(text = "Sign Out" , fontWeight = FontWeight.Bold)*/
-            LogoutButton(
-                modifier = Modifier.padding(horizontal = 50.sdp),
-                onClick = {
-                    onNavigate(ScreensRoute.Login.route)
-                })
-
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(7.sdp)) {
+                itemsIndexed(listHomeOptions) { index, item ->
+                    if (index == listHomeOptions.size - 1) {
+                        ItemOptionNotification(
+                            item = item,
+                            isChecked = isNotificationEnable,
+                            onCheckedChange = {
+                                if (it != isNotificationEnable) {
+                                    isNotificationEnable = it
+                                }
+                            })
+                    } else {
+                        ItemOptions(item = item, modifier = Modifier.safeClickable(rippleEnabled = true) {
+                            if(item.route.isNotBlank()){
+                                onNavigate(item.route)
+                            }
+                        })
+                    }
+                }
+            }
             SpacerWeight(1f)
+            LogoutButton(
+                modifier = Modifier.padding(horizontal = 10.sdp),
+                onClick = {
+                    onNavigate(ScreensRoute.Login.route)
+                })
+
+            SpacerHeight(5.hpr)
         }
     }
+}
+
+fun getHomeOptions(): List<HomeOptionsModel> {
+    return listOf(
+        HomeOptionsModel(
+            title = "Log Daily Mood",
+            icon = R.drawable.ic_daily_mood,
+            route = ScreensRoute.LogDailyMood.route
+        ),
+        HomeOptionsModel(
+            title = "Habit Tracker",
+            icon = R.drawable.ic_habit_tracker,
+            route = ScreensRoute.HabitTracker.route
+        ),
+        HomeOptionsModel(
+            title = "Guided Breathing Exercises",
+            icon = R.drawable.ic_breathing_excercise,
+            route = ScreensRoute.BreathingExercise.route
+        ),
+        HomeOptionsModel(
+            title = "Insights",
+            icon = R.drawable.ic_insights,
+            route = ScreensRoute.Insights.route
+        ),
+        HomeOptionsModel(title = "Turn On Notification", icon = R.drawable.ic_bell, route = ""),
+    )
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewHomeScreen() {
+    HomeScreen {}
 }

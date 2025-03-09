@@ -3,6 +3,7 @@ package com.example.moodbloom.presentation.screens.signup
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -92,7 +93,7 @@ internal fun SignUpScreen(
             )
             SpacerWeight(1f)
             TextButton(
-                shape = MaterialTheme.shapes.extraLarge, text = "Sign Up", onClick = {
+                Modifier.padding(horizontal = 10.sdp), text = "REGISTER", onClick = {
 
                 })
             SpacerWeight(1f)

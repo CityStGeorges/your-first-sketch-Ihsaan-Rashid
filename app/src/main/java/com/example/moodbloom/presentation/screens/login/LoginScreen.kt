@@ -3,6 +3,7 @@ package com.example.moodbloom.presentation.screens.login
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -50,7 +51,7 @@ internal fun LoginScreen(
     var password by remember { mutableStateOf("") }
 
     val currentPrompt by promptsViewModel.currentPrompt.collectAsStateWithLifecycle()
-    ScreenContainer(currentPrompt = currentPrompt, horizontalPadding = 50.sdp) {
+    ScreenContainer(currentPrompt = currentPrompt) {
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
             SpacerHeight(7.hpr)
             ResourceImage(image = R.drawable.ic_logo, modifier = Modifier.height(12.hpr))
@@ -74,7 +75,7 @@ internal fun LoginScreen(
             )
             SpacerWeight(1f)
             TextButton(
-                shape = MaterialTheme.shapes.extraLarge, text = "Sign In", onClick = {
+                Modifier.padding(horizontal = 10.sdp), text = "LOGIN", onClick = {
                     onNavigate(ScreensRoute.Home.route)
                 })
             SpacerWeight(1f)

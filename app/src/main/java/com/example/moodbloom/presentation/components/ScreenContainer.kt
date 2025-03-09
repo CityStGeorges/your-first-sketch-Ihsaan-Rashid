@@ -21,7 +21,7 @@ import com.example.moodbloom.ui.theme.AppTheme
 fun ScreenContainer(
     modifier: Modifier = Modifier,
     currentPrompt: PromptTypeShow?=null,
-    horizontalPadding: Dp = 12.sdp,
+    horizontalPadding: Dp = 15.sdp,
     content: @Composable (() -> Unit),
 ) {
     //val keyboardController = LocalSoftwareKeyboardController.current

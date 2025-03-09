@@ -8,5 +8,9 @@ sealed class ScreensRoute (val route: String){
     data object Login : ScreensRoute(route = "loginScreen")
     data object SignUp : ScreensRoute(route = "signUpScreen")
     data object Home : ScreensRoute(route = "homeScreen")
+    data object LogDailyMood : ScreensRoute(route = "LogDailyMood")
+    data object HabitTracker : ScreensRoute(route = "HabitTracker")
+    data object BreathingExercise : ScreensRoute(route = "BreathingExercise")
+    data object Insights : ScreensRoute(route = "Insights")
 
 }

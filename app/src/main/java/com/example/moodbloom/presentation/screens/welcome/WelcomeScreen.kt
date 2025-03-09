@@ -3,6 +3,7 @@ package com.example.moodbloom.presentation.screens.welcome
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -39,7 +40,7 @@ internal fun WelcomeScreen(
 ) {
 
     val currentPrompt by promptsViewModel.currentPrompt.collectAsStateWithLifecycle()
-    ScreenContainer(currentPrompt = currentPrompt, horizontalPadding = 50.sdp) {
+    ScreenContainer(currentPrompt = currentPrompt) {
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -50,22 +51,22 @@ internal fun WelcomeScreen(
             HeadlineMediumText(text = "Welcome", fontSize = 48.textSdp)
             SpacerWeight(.5f)
             TextButton(
-                shape = MaterialTheme.shapes.extraLarge,
+                modifier = Modifier.padding(horizontal = 10.sdp),
                 text = "Sign Up",
                 onClick = {
                     onNavigate(ScreensRoute.SignUp.route)
                 })
             SpacerHeight(2.hpr)
-            TextButton(
-                shape = MaterialTheme.shapes.extraLarge, text = "Sign In", onClick = {
+            TextButton(text = "Sign In",modifier = Modifier.padding(horizontal = 10.sdp), onClick = {
                     onNavigate(ScreensRoute.Login.route)
                 })
             SpacerHeight(2.hpr)
             LoginWithGoogleButton(
+                modifier = Modifier.padding(horizontal = 10.sdp),
                 text = "Sign in with Google", onClick = {
 
                 })
-            SpacerHeight(2.hpr)
+            SpacerHeight(4.hpr)
             LabelMediumText(text = "Forgot Your Password?")
             SpacerWeight(1f)
         }

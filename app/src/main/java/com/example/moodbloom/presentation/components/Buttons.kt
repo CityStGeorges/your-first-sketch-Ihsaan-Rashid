@@ -136,7 +136,6 @@ fun LoginWithGoogleButton(
         modifier = modifier,
         containerColor= Color.White,
         borderColor = MaterialTheme.colorScheme.outline,
-        shape = MaterialTheme.shapes.extraLarge,
         content = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -180,13 +179,13 @@ fun LoginWithGoogleButton(
 fun LogoutButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    primary: Boolean = false,
+    primary: Boolean = true,
     title: String = "Sign Out",
     shape : Shape = MaterialTheme.shapes.large,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Center,
     changeColorsOnDisable: Boolean = true,
     iconPainter:Int = R.drawable.ic_logout,
-    textColor: Color = if(primary){MaterialTheme.colorScheme.onPrimary}else{MaterialTheme.colorScheme.onSecondary},
+    textColor: Color = Color.White,
     onClick: () -> Unit,
 ) {
 
@@ -194,6 +193,7 @@ fun LogoutButton(
         enabled = enabled,
         primary = primary,
         modifier = modifier,
+        containerColor = MaterialTheme.colorScheme.error,
         shape=shape,
         content = {
             Row(
@@ -205,7 +205,7 @@ fun LogoutButton(
 
                     ResourceImage(
                         image = iconPainter,
-                        modifier = Modifier.size(18.sdp),
+                        modifier = Modifier.size(22.sdp),
                     )
                     SpacerWidth(width = 10.sdp)
                     if (enabled){
@@ -224,7 +224,7 @@ fun LogoutButton(
                     }else {
                         LabelLargeText(text = title, fontWeight = FontWeight.SemiBold,overrideColor = textColor)
                     }
-                    ResourceImage(image = iconPainter, modifier = Modifier.size(18.sdp))
+                    ResourceImage(image = iconPainter, modifier = Modifier.size(22.sdp))
                 }
 
             }
