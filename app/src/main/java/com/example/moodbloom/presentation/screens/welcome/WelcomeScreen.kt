@@ -4,13 +4,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.moodbloom.MainViewModel
 import com.example.moodbloom.R
 import com.example.moodbloom.extension.SpacerHeight
 import com.example.moodbloom.extension.SpacerWeight
@@ -29,6 +29,7 @@ import com.example.moodbloom.ui.typo.LabelMediumText
 @Composable
 fun WelcomeScreenRoute(
     onNavigate: (String) -> Unit,
+    mainViewModel: MainViewModel,
     viewModel: WelcomeViewModel = hiltViewModel()
 ) {
     WelcomeScreen(onNavigate = onNavigate)

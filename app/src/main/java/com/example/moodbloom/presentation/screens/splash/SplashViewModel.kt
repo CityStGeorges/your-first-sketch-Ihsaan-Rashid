@@ -21,7 +21,7 @@ class SplashViewModel @Inject constructor(
     fun startSplash() {
         viewModelScope.launch {
             _splashState.value= SplashState.Loading
-            delay(2000)
+            delay(4000)
             _splashState.value=SplashState.Success("")
         }
     }

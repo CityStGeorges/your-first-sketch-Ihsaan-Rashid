@@ -131,4 +131,6 @@ dependencies {
     implementation(libs.lottie.compose)
     //google fonts
     implementation (libs.androidx.ui.text.google.fonts)
+
+    implementation (libs.ycharts)
 }

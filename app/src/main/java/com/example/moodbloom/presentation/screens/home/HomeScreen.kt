@@ -1,5 +1,6 @@
 package com.example.moodbloom.presentation.screens.home
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,12 +20,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.example.moodbloom.MainViewModel
 import com.example.moodbloom.R
 import com.example.moodbloom.domain.models.HomeOptionsModel
 import com.example.moodbloom.extension.SpacerHeight
 import com.example.moodbloom.extension.SpacerWeight
 import com.example.moodbloom.extension.SpacerWidth
 import com.example.moodbloom.presentation.components.LogoutButton
+import com.example.moodbloom.presentation.components.PromptTypeShow
 import com.example.moodbloom.presentation.components.PromptsViewModel
 import com.example.moodbloom.presentation.components.ResourceImage
 import com.example.moodbloom.presentation.components.ScreenContainer
@@ -39,9 +43,11 @@ import com.example.moodbloom.ui.typo.HeadlineMediumText
 @Composable
 fun HomeScreenRoute(
     onNavigate: (String) -> Unit,
+    mainViewModel: MainViewModel,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     HomeScreen(onNavigate = onNavigate)
+
 }
 
 @Composable
@@ -52,6 +58,29 @@ internal fun HomeScreen(
     val currentPrompt by promptsViewModel.currentPrompt.collectAsStateWithLifecycle()
     var isNotificationEnable by remember { mutableStateOf(false) }
     val listHomeOptions = getHomeOptions()
+
+    fun logout(){
+        promptsViewModel.updatePrompt(
+            PromptTypeShow.Confirmation(
+                img = R.drawable.ic_error,
+                title = "Sign Out!",
+                message = "Are you sure you want to sign out?",
+                positiveButtonText = "No",
+                positiveButtonClick = {
+                },
+                negativeButtonText = "Yes",
+                negativeButtonClick = {
+                    onNavigate(ScreensRoute.Login.route)
+                },
+                onDismiss = {
+                    promptsViewModel.updatePrompt(null)
+                }
+            )
+        )
+    }
+    BackHandler {
+        logout()
+    }
     ScreenContainer(currentPrompt = currentPrompt) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -65,7 +94,7 @@ internal fun HomeScreen(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 HeadlineMediumText(text = "Your Mood this week:")
                 SpacerWidth(5.sdp)
-                ResourceImage(image = R.drawable.ic_smile_emoji, modifier = Modifier.size(50.sdp))
+                ResourceImage(image = LottieCompositionSpec.RawRes(R.raw.anim2_mood_very_happy) , modifier = Modifier.size(60.sdp))
             }
 
             SpacerHeight(5.hpr)
@@ -93,7 +122,7 @@ internal fun HomeScreen(
             LogoutButton(
                 modifier = Modifier.padding(horizontal = 10.sdp),
                 onClick = {
-                    onNavigate(ScreensRoute.Login.route)
+                    logout()
                 })
 
             SpacerHeight(5.hpr)
@@ -104,17 +133,17 @@ internal fun HomeScreen(
 fun getHomeOptions(): List<HomeOptionsModel> {
     return listOf(
         HomeOptionsModel(
-            title = "Log Daily Mood",
+            title = "Log daily Mood",
             icon = R.drawable.ic_daily_mood,
             route = ScreensRoute.LogDailyMood.route
         ),
         HomeOptionsModel(
-            title = "Habit Tracker",
+            title = "Habit tracker",
             icon = R.drawable.ic_habit_tracker,
             route = ScreensRoute.HabitTracker.route
         ),
         HomeOptionsModel(
-            title = "Guided Breathing Exercises",
+            title = "Guided breathing exercises",
             icon = R.drawable.ic_breathing_excercise,
             route = ScreensRoute.BreathingExercise.route
         ),
@@ -123,7 +152,7 @@ fun getHomeOptions(): List<HomeOptionsModel> {
             icon = R.drawable.ic_insights,
             route = ScreensRoute.Insights.route
         ),
-        HomeOptionsModel(title = "Turn On Notification", icon = R.drawable.ic_bell, route = ""),
+        HomeOptionsModel(title = "Turn on notification", icon = R.drawable.ic_bell, route = ""),
     )
 }
 

@@ -195,6 +195,7 @@ fun <T> PromptBody(
             positiveButton?.invoke()
             negativeButton?.invoke()
         }
+        Spacer(modifier = Modifier.height(20.sdp))
     }
 }
 
@@ -368,7 +369,7 @@ fun ShowConfirmation(
                         borderColor = MaterialTheme.colorScheme.primary,
                         containerColor = MaterialTheme.colorScheme.background,
                         content = {
-                            LabelLargeText(text =negativeButtonText, fontWeight = FontWeight.Medium, overrideColor = MaterialTheme.colorScheme.onPrimary)
+                            LabelLargeText(text =negativeButtonText, fontWeight = FontWeight.Medium)
                         },
                         onClick = {
                             coroutineScope.launch {

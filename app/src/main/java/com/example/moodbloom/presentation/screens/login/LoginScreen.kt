@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.moodbloom.MainViewModel
 import com.example.moodbloom.R
 import com.example.moodbloom.extension.SpacerHeight
 import com.example.moodbloom.extension.SpacerWeight
@@ -34,6 +35,7 @@ import com.example.moodbloom.ui.typo.HeadlineMediumText
 @Composable
 fun LoginScreenRoute(
     onNavigate: (String) -> Unit,
+    mainViewModel: MainViewModel,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
 

@@ -58,9 +58,9 @@ fun BaseButton(
     changeColorsOnDisable:Boolean= true,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     shape : Shape = MaterialTheme.shapes.large,
-    contentColor: Color =  if(primary){MaterialTheme.colorScheme.onPrimary}else{MaterialTheme.colorScheme.onSecondary},
-    containerColor: Color = if(changeColorsOnDisable && !enabled){md_theme_light_disable} else if(primary){MaterialTheme.colorScheme.primary}else{MaterialTheme.colorScheme.secondary},
-    borderColor: Color = if(changeColorsOnDisable && !enabled){md_theme_light_disable_outline} else {Color.Unspecified},
+    contentColor: Color =  if(primary){MaterialTheme.colorScheme.onPrimary}else{MaterialTheme.colorScheme.primary},
+    containerColor: Color = if(changeColorsOnDisable && !enabled){md_theme_light_disable} else if(primary){MaterialTheme.colorScheme.primary}else{MaterialTheme.colorScheme.background},
+    borderColor: Color = if(changeColorsOnDisable && !enabled){md_theme_light_disable_outline} else {if (primary){Color.Unspecified}else{MaterialTheme.colorScheme.primary}},
     content: @Composable () -> Unit,
 ) {
         Button(

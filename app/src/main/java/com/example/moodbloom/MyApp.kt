@@ -16,6 +16,7 @@ import com.example.moodbloom.navigation.MyAppNavHost
 @Composable
 internal fun MyApp(
     appState: MyAppState,
+    mainViewModel: MainViewModel
 ) {
 
 
@@ -37,6 +38,7 @@ internal fun MyApp(
                         //.padding(padding)
                         .weight(1f),
                     navController = appState.navController,
+                    mainViewModel=mainViewModel
                 )
             }
         }

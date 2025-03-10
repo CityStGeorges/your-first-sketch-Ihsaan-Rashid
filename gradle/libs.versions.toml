@@ -60,6 +60,7 @@ crashlytics = "3.0.2"
 securityCryptoKtx = "1.0.0"
 activity = "1.9.3"
 constraintlayout = "2.2.0"
+ycharts = "2.1.0"
 
 
 [libraries]
@@ -101,7 +102,7 @@ gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 coil-svg = { group = "io.coil-kt", name = "coil-svg", version.ref = "coil" }
 lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieCompose" }
-
+ycharts = { module = "co.yml:ycharts", version.ref = "ycharts" }
 
 
 

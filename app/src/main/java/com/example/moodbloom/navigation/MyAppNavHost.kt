@@ -7,8 +7,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.moodbloom.MainViewModel
 import com.example.moodbloom.presentation.screens.home.HomeScreenRoute
+import com.example.moodbloom.presentation.screens.logdailymood.LogDailyMoodRoute
 import com.example.moodbloom.presentation.screens.login.LoginScreenRoute
+import com.example.moodbloom.presentation.screens.moodtrends.MoodTrendsScreenRoute
 import com.example.moodbloom.presentation.screens.signup.SignUpScreenRoute
 import com.example.moodbloom.presentation.screens.splash.SplashRoute
 import com.example.moodbloom.presentation.screens.welcome.WelcomeScreenRoute
@@ -19,6 +22,7 @@ import com.example.moodbloom.routes.ScreensRoute
 fun MyAppNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController,
+    mainViewModel: MainViewModel,
     startDestination: String = ScreensRoute.Splash.route
 ) {
     NavHost(
@@ -31,23 +35,37 @@ fun MyAppNavHost(
         }
 
         composable(route = ScreensRoute.Welcome.route) {
-            WelcomeScreenRoute(onNavigate = {
+            WelcomeScreenRoute(mainViewModel=mainViewModel,onNavigate = {
                 navController.navigateToScreen(it)
             })
         }
         composable(route = ScreensRoute.Login.route) {
-            LoginScreenRoute(onNavigate = {
+            LoginScreenRoute(mainViewModel=mainViewModel,onNavigate = {
                 navController.navigateToScreen(it)
             })
         }
         composable(route = ScreensRoute.SignUp.route) {
-            SignUpScreenRoute(onNavigate = {
+            SignUpScreenRoute(mainViewModel=mainViewModel,onNavigate = {
                 navController.navigateToScreen(it)
             })
         }
         composable(route = ScreensRoute.Home.route) {
-            HomeScreenRoute(onNavigate = {
+            HomeScreenRoute(mainViewModel=mainViewModel,onNavigate = {
                 navController.navigateToScreen(it)
+            })
+        }
+        composable(route = ScreensRoute.LogDailyMood.route) {
+            LogDailyMoodRoute(mainViewModel=mainViewModel,onNavigate = {
+                navController.navigateToScreen(it)
+            }, onBackClick = {
+                navController.popBackStack()
+            })
+        }
+        composable(route = ScreensRoute.MoodTrends.route) {
+            MoodTrendsScreenRoute(mainViewModel=mainViewModel,onNavigate = {
+                navController.navigateToScreen(it)
+            }, onBackClick = {
+                navController.popBackStack()
             })
         }
 

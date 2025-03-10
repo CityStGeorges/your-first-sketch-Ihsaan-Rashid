@@ -52,7 +52,7 @@ fun ItemOptionNotification(
     Row(modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         ResourceImage(image = item.icon, modifier = Modifier.size(25.sdp))
         SpacerWidth(15.sdp)
-        TitleSmallText(text = if (isChecked) "Turn Off Notification" else item.title)
+        TitleSmallText(text = if (isChecked) "Turn off notification" else item.title)
         SpacerWeight(1f)
         Switch(
             checked = isChecked, onCheckedChange = onCheckedChange, colors = SwitchDefaults.colors(
