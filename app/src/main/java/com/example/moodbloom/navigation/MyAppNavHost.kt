@@ -8,6 +8,12 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.moodbloom.MainViewModel
+import com.example.moodbloom.presentation.screens.excersice.ExerciseRoute
+import com.example.moodbloom.presentation.screens.excersice.SelectExerciseRoute
+import com.example.moodbloom.presentation.screens.habittracker.CustomHabitTrackerRoute
+import com.example.moodbloom.presentation.screens.habittracker.HabitTrackerRoute
+import com.example.moodbloom.presentation.screens.habittracker.SelectHabitTrackerRoute
+import com.example.moodbloom.presentation.screens.habittracker.SetUpHabitTrackerRoute
 import com.example.moodbloom.presentation.screens.home.HomeScreenRoute
 import com.example.moodbloom.presentation.screens.logdailymood.LogDailyMoodRoute
 import com.example.moodbloom.presentation.screens.login.LoginScreenRoute
@@ -68,7 +74,53 @@ fun MyAppNavHost(
                 navController.popBackStack()
             })
         }
+        composable(route = ScreensRoute.HabitTracker.route) {
+            HabitTrackerRoute(mainViewModel=mainViewModel,onNavigate = {
+                navController.navigateToScreen(it)
+            }, onBackClick = {
+                navController.popBackStack()
+            })
+        }
+        composable(route = ScreensRoute.SelectHabitTracker.route) {
+            SelectHabitTrackerRoute(mainViewModel=mainViewModel,onNavigate = {
+                navController.navigateToScreen(it)
+            }, onBackClick = {
+                navController.popBackStack()
+            })
+        }
 
+        composable(route = ScreensRoute.CustomHabitTracker.route) {
+            CustomHabitTrackerRoute(mainViewModel=mainViewModel,onNavigate = {
+                navController.popBackStack()
+                navController.popBackStack()
+            }, onBackClick = {
+                navController.popBackStack()
+            })
+        }
+        composable(route = ScreensRoute.CustomHabitTracker.route) {
+            SetUpHabitTrackerRoute(mainViewModel=mainViewModel,onNavigate = {
+                navController.popBackStack()
+                navController.popBackStack()
+            }, onBackClick = {
+                navController.popBackStack()
+            })
+        }
+
+        composable(route =ScreensRoute.BreathingExercise.route) {
+            SelectExerciseRoute(mainViewModel=mainViewModel,onNavigate = {
+                navController.navigateToScreen(it)
+            }, onBackClick = {
+                navController.popBackStack()
+            })
+        }
+
+        composable(route =ScreensRoute.Exercise.route) {
+            ExerciseRoute(mainViewModel=mainViewModel,onNavigate = {
+                navController.popBackStack()
+            }, onBackClick = {
+                navController.popBackStack()
+            })
+        }
 
     }
 }

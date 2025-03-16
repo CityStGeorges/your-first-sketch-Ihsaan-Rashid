@@ -1,5 +1,8 @@
 package com.example.moodbloom.presentation.screens.home
 
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,7 +20,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.content.ContextCompat.startActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -27,6 +32,7 @@ import com.example.moodbloom.domain.models.HomeOptionsModel
 import com.example.moodbloom.extension.SpacerHeight
 import com.example.moodbloom.extension.SpacerWeight
 import com.example.moodbloom.extension.SpacerWidth
+import com.example.moodbloom.extension.showToast
 import com.example.moodbloom.presentation.components.LogoutButton
 import com.example.moodbloom.presentation.components.PromptTypeShow
 import com.example.moodbloom.presentation.components.PromptsViewModel
@@ -58,8 +64,8 @@ internal fun HomeScreen(
     val currentPrompt by promptsViewModel.currentPrompt.collectAsStateWithLifecycle()
     var isNotificationEnable by remember { mutableStateOf(false) }
     val listHomeOptions = getHomeOptions()
-
-    fun logout(){
+    val context = LocalContext.current
+    fun logout() {
         promptsViewModel.updatePrompt(
             PromptTypeShow.Confirmation(
                 img = R.drawable.ic_error,
@@ -94,13 +100,16 @@ internal fun HomeScreen(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 HeadlineMediumText(text = "Your Mood this week:")
                 SpacerWidth(5.sdp)
-                ResourceImage(image = LottieCompositionSpec.RawRes(R.raw.anim2_mood_very_happy) , modifier = Modifier.size(60.sdp))
+                ResourceImage(
+                    image = LottieCompositionSpec.RawRes(R.raw.anim2_mood_very_happy),
+                    modifier = Modifier.size(60.sdp)
+                )
             }
 
             SpacerHeight(5.hpr)
             LazyColumn(verticalArrangement = Arrangement.spacedBy(7.sdp)) {
                 itemsIndexed(listHomeOptions) { index, item ->
-                    if (index == listHomeOptions.size - 1) {
+                    if (item.route=="notificationEnable") {
                         ItemOptionNotification(
                             item = item,
                             isChecked = isNotificationEnable,
@@ -109,12 +118,41 @@ internal fun HomeScreen(
                                     isNotificationEnable = it
                                 }
                             })
-                    } else {
-                        ItemOptions(item = item, modifier = Modifier.safeClickable(rippleEnabled = true) {
-                            if(item.route.isNotBlank()){
-                                onNavigate(item.route)
-                            }
-                        })
+                    }else  if (item.route=="helpline") {
+                        val uri = Uri.parse("tel:" +"123456789")
+                        val intent = Intent(Intent.ACTION_DIAL, uri)
+                        try {
+                            context.startActivity(intent)
+                        } catch (e: SecurityException) {
+                            e.printStackTrace()
+                        }
+                    }else  if (item.route=="deleteAccount") {
+                        promptsViewModel.updatePrompt(
+                            PromptTypeShow.Confirmation(
+                                img = R.drawable.ic_error,
+                                title = "Delete Account!",
+                                message = "Are you sure you want to delete your account?",
+                                positiveButtonText = "No",
+                                positiveButtonClick = {
+                                },
+                                negativeButtonText = "Yes",
+                                negativeButtonClick = {
+                                   context.showToast("Your request for delete account submitted.")
+                                },
+                                onDismiss = {
+                                    promptsViewModel.updatePrompt(null)
+                                }
+                            )
+                        )
+                    }
+                    else {
+                        ItemOptions(
+                            item = item,
+                            modifier = Modifier.safeClickable(rippleEnabled = true) {
+                                if (item.route.isNotBlank()) {
+                                    onNavigate(item.route)
+                                }
+                            })
                     }
                 }
             }
@@ -152,7 +190,17 @@ fun getHomeOptions(): List<HomeOptionsModel> {
             icon = R.drawable.ic_insights,
             route = ScreensRoute.Insights.route
         ),
-        HomeOptionsModel(title = "Turn on notification", icon = R.drawable.ic_bell, route = ""),
+        HomeOptionsModel(title = "Turn on notification", icon = R.drawable.ic_bell, route = "notificationEnable"),
+        HomeOptionsModel(
+            title = "Request to delete account",
+            icon = R.drawable.ic_delete_round,
+            route = "deleteAccount"
+        ),
+        HomeOptionsModel(
+            title = "Emergency Helpline",
+            icon = R.drawable.ic_helpline,
+            route = "helpline"
+        ),
     )
 }
 

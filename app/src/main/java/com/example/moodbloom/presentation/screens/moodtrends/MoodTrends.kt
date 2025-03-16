@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -51,12 +52,17 @@ import com.example.moodbloom.domain.models.DateModel
 import com.example.moodbloom.extension.SpacerHeight
 import com.example.moodbloom.extension.SpacerWidth
 import com.example.moodbloom.presentation.components.BaseButton
+import com.example.moodbloom.presentation.components.CardContainer
 import com.example.moodbloom.presentation.components.PromptsViewModel
 import com.example.moodbloom.presentation.components.ResourceImage
 import com.example.moodbloom.presentation.components.ScreenContainer
 import com.example.moodbloom.presentation.components.TopAppBar
 import com.example.moodbloom.presentation.components.hpr
 import com.example.moodbloom.presentation.components.sdp
+import com.example.moodbloom.ui.typo.BodySmallText
+import com.example.moodbloom.ui.typo.TitleLargeText
+import com.example.moodbloom.ui.typo.TitleMediumText
+import com.example.moodbloom.ui.typo.TitleSmallText
 
 @Composable
 fun MoodTrendsScreenRoute(
@@ -86,7 +92,7 @@ internal fun MoodTrendsScreen(
 
     onBackClick: () -> Unit
 ) {
-
+    var habitInsights by remember { mutableStateOf("This is the testing Insights Text djfk  ksjdfj koj dsfk kjdsf aksejf mnf urmds the  sdjfh sdfjhuydsa fjsdf lkjds fsdnsdmf djfh") }
     val currentPrompt by promptsViewModel.currentPrompt.collectAsStateWithLifecycle()
     val configuration = LocalConfiguration.current
     val screenWidthDp = configuration.screenWidthDp.dp
@@ -177,7 +183,7 @@ internal fun MoodTrendsScreen(
             TopAppBar(title = "Mood Trends") {
                 onBackClick()
             }
-            SpacerHeight(2.hpr)
+            SpacerHeight(5.hpr)
             OutlinedCard(
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.background,
@@ -252,6 +258,19 @@ internal fun MoodTrendsScreen(
 
                 }
             }
+            SpacerHeight(2.hpr)
+            TitleLargeText(text = "Insights")
+            SpacerHeight(1.hpr)
+            CardContainer{
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.sdp)
+            ) {
+                SpacerHeight(10.sdp)
+                BodySmallText(text =habitInsights, modifier = Modifier.fillMaxWidth().heightIn(min = 200.sdp),)
+            }
+        }
         }
     }
 }

@@ -65,6 +65,28 @@ fun ItemOptionNotification(
     }
 }
 
+
+@Composable
+fun ItemSwitcher(
+    modifier: Modifier = Modifier,
+    item: String,
+    isChecked: Boolean = false,
+    onCheckedChange: (Boolean) -> Unit = {}
+) {
+    Row(modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        TitleSmallText(text = item)
+        SpacerWeight(1f)
+        Switch(
+            checked = isChecked, onCheckedChange = onCheckedChange, colors = SwitchDefaults.colors(
+                checkedThumbColor = Color(parseColor("#3076F0")),
+                uncheckedThumbColor = Color(parseColor("#C7C7C7")),
+                checkedTrackColor = Color(parseColor("#E2E1E1")),
+                uncheckedTrackColor = Color(parseColor("#E2E1E1"))
+            )
+        )
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun PreviewItemOptions() {

@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.util.Base64
 import android.view.View
@@ -24,6 +25,7 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.Dp
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.moodbloom.presentation.components.hpr
 import com.example.moodbloom.presentation.components.sdp
 import com.google.gson.Gson
@@ -216,6 +218,33 @@ fun String.isLetterWitSpace(): Boolean = this.all { it.isLetterWitSpace() }
 fun Char.isSpecialCharacter(): Boolean = !this.isLetterOrDigit()
 fun String.isSpecialCharacter(): Boolean = this.all { it.isSpecialCharacter() }
 
+
+fun String.getDrawableResourceId(context: Context): Int? {
+    val resourceName = this.substringAfterLast(".").takeIf { it.isNotEmpty() } ?: return null // Extract the drawable name
+    try {
+        val packageName = context.packageName
+
+        return context.resources.getIdentifier(resourceName, "drawable", packageName).takeIf { it != 0 }
+    } catch (e: Exception) {
+        return null
+    }
+}
+
+fun String.getDrawable(context: Context): Drawable? {
+    try {
+        val resourceId = this.getDrawableResourceId(context) ?: return null
+        return ContextCompat.getDrawable(context, resourceId)
+    } catch (e: Exception) {
+        return null
+    }
+}
+
+
+fun Int.formatTime(): String {
+    val minutes = this / 60
+    val remainingSeconds = this % 60
+    return String.format("%02d:%02d", minutes, remainingSeconds)
+}
 
 
 
