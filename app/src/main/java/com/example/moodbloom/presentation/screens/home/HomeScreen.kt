@@ -118,39 +118,42 @@ internal fun HomeScreen(
                                     isNotificationEnable = it
                                 }
                             })
-                    }else  if (item.route=="helpline") {
-                        val uri = Uri.parse("tel:" +"123456789")
-                        val intent = Intent(Intent.ACTION_DIAL, uri)
-                        try {
-                            context.startActivity(intent)
-                        } catch (e: SecurityException) {
-                            e.printStackTrace()
-                        }
-                    }else  if (item.route=="deleteAccount") {
-                        promptsViewModel.updatePrompt(
-                            PromptTypeShow.Confirmation(
-                                img = R.drawable.ic_error,
-                                title = "Delete Account!",
-                                message = "Are you sure you want to delete your account?",
-                                positiveButtonText = "No",
-                                positiveButtonClick = {
-                                },
-                                negativeButtonText = "Yes",
-                                negativeButtonClick = {
-                                   context.showToast("Your request for delete account submitted.")
-                                },
-                                onDismiss = {
-                                    promptsViewModel.updatePrompt(null)
-                                }
-                            )
-                        )
                     }
                     else {
                         ItemOptions(
                             item = item,
                             modifier = Modifier.safeClickable(rippleEnabled = true) {
                                 if (item.route.isNotBlank()) {
-                                    onNavigate(item.route)
+                                      if (item.route=="helpline") {
+                                        val uri = Uri.parse("tel:" +"123456789")
+                                        val intent = Intent(Intent.ACTION_DIAL, uri)
+                                        try {
+                                            context.startActivity(intent)
+                                        } catch (e: SecurityException) {
+                                            e.printStackTrace()
+                                        }
+                                    }else  if (item.route=="deleteAccount") {
+                                        promptsViewModel.updatePrompt(
+                                            PromptTypeShow.Confirmation(
+                                                img = R.drawable.ic_error,
+                                                title = "Delete Account!",
+                                                message = "Are you sure you want to delete your account?",
+                                                positiveButtonText = "No",
+                                                positiveButtonClick = {
+                                                },
+                                                negativeButtonText = "Yes",
+                                                negativeButtonClick = {
+                                                    context.showToast("Your request for delete account submitted.")
+                                                },
+                                                onDismiss = {
+                                                    promptsViewModel.updatePrompt(null)
+                                                }
+                                            )
+                                        )
+                                    }else{
+                                        onNavigate(item.route)
+                                    }
+
                                 }
                             })
                     }
