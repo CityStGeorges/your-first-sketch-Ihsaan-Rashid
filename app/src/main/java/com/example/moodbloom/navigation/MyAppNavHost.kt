@@ -8,6 +8,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.moodbloom.MainViewModel
+import com.example.moodbloom.presentation.screens.InsightsScreenRoute
 import com.example.moodbloom.presentation.screens.excersice.ExerciseRoute
 import com.example.moodbloom.presentation.screens.excersice.SelectExerciseRoute
 import com.example.moodbloom.presentation.screens.habittracker.CustomHabitTrackerRoute
@@ -116,6 +117,13 @@ fun MyAppNavHost(
 
         composable(route =ScreensRoute.Exercise.route) {
             ExerciseRoute(mainViewModel=mainViewModel,onNavigate = {
+                navController.popBackStack()
+            }, onBackClick = {
+                navController.popBackStack()
+            })
+        }
+        composable(route =ScreensRoute.Insights.route) {
+            InsightsScreenRoute(mainViewModel=mainViewModel,onNavigate = {
                 navController.popBackStack()
             }, onBackClick = {
                 navController.popBackStack()
