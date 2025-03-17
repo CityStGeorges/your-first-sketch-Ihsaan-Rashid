@@ -27,3 +27,14 @@ class LoginUseCase @Inject constructor(private val repo: AuthRepo) {
     }
 }
 
+class SendPasswordResetEmailUseCase @Inject constructor(private val repo: AuthRepo) {
+    suspend fun invoke(params: String): ResponseStates<Boolean> {
+        return repo.sendPasswordResetEmail(params)
+    }
+}
+class ResetPasswordEmailUseCase @Inject constructor(private val repo: AuthRepo) {
+    suspend fun invoke(params: String): ResponseStates<Boolean> {
+        return repo.sendPasswordResetEmail(params)
+    }
+}
+

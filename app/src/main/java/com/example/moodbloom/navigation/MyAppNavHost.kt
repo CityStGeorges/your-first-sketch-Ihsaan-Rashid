@@ -11,6 +11,7 @@ import com.example.moodbloom.MainViewModel
 import com.example.moodbloom.presentation.screens.InsightsScreenRoute
 import com.example.moodbloom.presentation.screens.excersice.ExerciseRoute
 import com.example.moodbloom.presentation.screens.excersice.SelectExerciseRoute
+import com.example.moodbloom.presentation.screens.forget.ForgetPasswordScreenRoute
 import com.example.moodbloom.presentation.screens.habittracker.CustomHabitTrackerRoute
 import com.example.moodbloom.presentation.screens.habittracker.HabitTrackerRoute
 import com.example.moodbloom.presentation.screens.habittracker.SelectHabitTrackerRoute
@@ -43,6 +44,11 @@ fun MyAppNavHost(
 
         composable(route = ScreensRoute.Welcome.route) {
             WelcomeScreenRoute(mainViewModel=mainViewModel,onNavigate = {
+                navController.navigateToScreen(it)
+            })
+        }
+        composable(route = ScreensRoute.ForgetPassword.route) {
+            ForgetPasswordScreenRoute(mainViewModel=mainViewModel,onNavigate = {
                 navController.navigateToScreen(it)
             })
         }

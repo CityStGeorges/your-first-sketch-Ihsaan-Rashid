@@ -90,4 +90,14 @@ class AuthRepoImpl @Inject constructor(
         }
     }
 
+    override suspend fun sendPasswordResetEmail(email: String): ResponseStates<Boolean> {
+        return try {
+            auth.sendPasswordResetEmail(email).await()
+            ResponseStates.Success(200, true)
+        } catch (e: Exception) {
+            Log.e("AuthRepository", "Password Reset Error: ${e.message}")
+            ResponseStates.Failure(999, "Password Reset Error: ${e.message}")
+        }
+    }
+
 }

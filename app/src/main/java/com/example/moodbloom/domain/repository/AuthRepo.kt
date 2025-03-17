@@ -9,4 +9,5 @@ interface AuthRepo {
      suspend fun signInWithGoogle(idToken: String):ResponseStates<FirebaseUser?>
      suspend fun registerUser(request: RegisterUserRequestModel):ResponseStates<FirebaseUser?>
      suspend fun loginUser(request: LoginRequestModel):ResponseStates<FirebaseUser?>
+     suspend fun sendPasswordResetEmail(email: String):ResponseStates<Boolean>
 }
