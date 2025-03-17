@@ -45,6 +45,7 @@ import com.example.moodbloom.presentation.components.sdp
 import com.example.moodbloom.presentation.components.textSdp
 import com.example.moodbloom.routes.ScreensRoute
 import com.example.moodbloom.ui.typo.HeadlineMediumText
+import com.google.firebase.auth.FirebaseUser
 
 
 @Composable
@@ -53,13 +54,16 @@ fun HomeScreenRoute(
     mainViewModel: MainViewModel,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    HomeScreen(onNavigate = onNavigate)
+    HomeScreen(onNavigate = onNavigate,firebaseUser=mainViewModel.firebaseUser)
 
 }
 
 @Composable
 internal fun HomeScreen(
-    promptsViewModel: PromptsViewModel = hiltViewModel(), onNavigate: (String) -> Unit
+    promptsViewModel: PromptsViewModel = hiltViewModel(),
+    firebaseUser: FirebaseUser?=null,
+    onNavigate: (String) -> Unit,
+
 ) {
 
     val currentPrompt by promptsViewModel.currentPrompt.collectAsStateWithLifecycle()
@@ -96,7 +100,7 @@ internal fun HomeScreen(
             SpacerHeight(2.hpr)
             ResourceImage(image = R.drawable.ic_logo, modifier = Modifier.height(12.hpr))
             SpacerHeight(2.hpr)
-            HeadlineMediumText(text = "Welcome Ihsaan!", fontSize = 48.textSdp)
+            HeadlineMediumText(text = "Welcome ${firebaseUser?.displayName}!", fontSize = 28.textSdp)
             SpacerHeight(2.hpr)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 HeadlineMediumText(text = "Your Mood this week:")
