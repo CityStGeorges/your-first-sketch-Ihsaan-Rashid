@@ -1,5 +1,9 @@
 package com.example.moodbloom.presentation.screens.habittracker
 
+import android.content.Context
+import android.media.AudioAttributes
+import android.media.MediaPlayer
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +15,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,6 +32,7 @@ import com.example.moodbloom.data.DataHelper.getDummyHabitsList
 import com.example.moodbloom.domain.models.HabitTrackerModel
 import com.example.moodbloom.extension.SpacerHeight
 import com.example.moodbloom.extension.SpacerWeight
+import com.example.moodbloom.extension.showToast
 import com.example.moodbloom.presentation.components.PromptsViewModel
 import com.example.moodbloom.presentation.components.ResourceImage
 import com.example.moodbloom.presentation.components.ScreenContainer
@@ -57,7 +63,10 @@ internal fun HabitTrackerScreen(
 
     val context = LocalContext.current
     val currentPrompt by promptsViewModel.currentPrompt.collectAsStateWithLifecycle()
-
+    LaunchedEffect(Unit) {
+        context.showToast("Long Press to complete your today habit")
+    }
+    val mediaPlayer = remember { MediaPlayer() }
     var listHabitTracker: List<HabitTrackerModel> by remember { mutableStateOf(getDummyHabitsList()) }
     ScreenContainer(currentPrompt = currentPrompt) {
         Column(
@@ -83,6 +92,7 @@ internal fun HabitTrackerScreen(
                         item = item
                     ) {
                         if(item.completedPerDay<item.totalPerDay){
+                            playSuccessTune(context=context,mediaPlayer=mediaPlayer)
                             listHabitTracker[index].completedPerDay++
                         }
                     }
@@ -91,7 +101,7 @@ internal fun HabitTrackerScreen(
             SpacerWeight(1f)
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                 ResourceImage(modifier = Modifier
-                    .size(40.sdp)
+                    .size(45.sdp)
                     .safeClickable {
                         onNavigate(ScreensRoute.SelectHabitTracker.route)
                     }, image = R.drawable.ic_add)
@@ -102,6 +112,34 @@ internal fun HabitTrackerScreen(
     }
 }
 
+
+
+fun playSuccessTune(context: Context, mediaPlayer: MediaPlayer) {
+    try {
+        val notificationSoundUri = Uri.parse(
+            "android.resource://" + context.packageName + "/" + R.raw.tune_good // Replace with your sound file
+        )
+
+        mediaPlayer.reset()
+        mediaPlayer.setAudioAttributes(
+            AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                .build()
+        )
+        mediaPlayer.setDataSource(context, notificationSoundUri)
+        mediaPlayer.prepareAsync()
+        mediaPlayer.setOnPreparedListener { mp ->
+            mp.start()
+        }
+        mediaPlayer.setOnCompletionListener { mp ->
+            mp.reset() //reset to avoid memory leaks
+        }
+
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
 
 @Preview(showBackground = true)
 @Composable

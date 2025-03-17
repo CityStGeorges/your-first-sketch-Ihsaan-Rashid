@@ -40,6 +40,7 @@ fun TextInputField(
     maxLines: Int = 1,
     enabled: Boolean = true,
     readOnly: Boolean = false,
+    singleLine: Boolean = false,
     textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
     shape: Shape = MaterialTheme.shapes.medium,
     modifier: Modifier = Modifier
@@ -58,6 +59,7 @@ fun TextInputField(
         shape = shape,
         maxLines = maxLines,
         minLines = minLines,
+        singleLine = singleLine,
         enabled = enabled,
         readOnly = readOnly,
         keyboardOptions = getKeyboardOptions(inputType),

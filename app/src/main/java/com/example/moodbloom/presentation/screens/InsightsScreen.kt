@@ -2,6 +2,7 @@ package com.example.moodbloom.presentation.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
@@ -90,14 +93,14 @@ internal fun InsightsScreen(
 
     onBackClick: () -> Unit
 ) {
-    var moodSummary by remember { mutableStateOf("This is the testing Habit summary Text djfk  ksjdfj koj dsfk kjdsf aksejf mnf urmds the  sdjfh sdfjhuydsa fjsdf lkjds fsdnsdmf djfh") }
-    var habitSummary by remember { mutableStateOf("This is the testing Habit summary Text djfk  ksjdfj koj dsfk kjdsf aksejf mnf urmds the  sdjfh sdfjhuydsa fjsdf lkjds fsdnsdmf djfh") }
+    var moodSummary by remember { mutableStateOf("This is the dummy mood summary Text djfk  ksjdfj koj dsfk kjdsf aksejf mnf urmds the  sdjfh sdfjhuydsa fjsdf lkjds fsdnsdmf djfh") }
+    var habitSummary by remember { mutableStateOf("This is the dummy Habit summary Text djfk  ksjdfj koj dsfk kjdsf aksejf mnf urmds the  sdjfh sdfjhuydsa fjsdf lkjds fsdnsdmf djfh") }
+    var insights by remember { mutableStateOf("This is the dummy insights of mood and habit Text djfk  ksjdfj koj dsfk kjdsf aksejf mnf urmds the  sdjfh sdfjhuydsa fjsdf lkjds fsdnsdmf djfh") }
     val currentPrompt by promptsViewModel.currentPrompt.collectAsStateWithLifecycle()
 
     ScreenContainer(currentPrompt = currentPrompt) {
         Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
         ) {
             TopAppBar(title = "Insights") {
                 onBackClick()
@@ -112,7 +115,7 @@ internal fun InsightsScreen(
                         .padding(10.sdp)
                 ) {
                     SpacerHeight(10.sdp)
-                    BodySmallText(text =moodSummary, modifier = Modifier.fillMaxWidth().heightIn(min = 200.sdp),)
+                    BodySmallText(text =moodSummary, modifier = Modifier.fillMaxWidth().heightIn(min = 150.sdp),)
                 }
             }
             SpacerHeight(2.hpr)
@@ -125,28 +128,20 @@ internal fun InsightsScreen(
                         .padding(10.sdp)
                 ) {
                     SpacerHeight(10.sdp)
-                    BodySmallText(text =habitSummary, modifier = Modifier.fillMaxWidth().heightIn(min = 200.sdp),)
+                    BodySmallText(text =habitSummary, modifier = Modifier.fillMaxWidth().heightIn(min = 150.sdp),)
                 }
             }
-
-            TitleMediumText(text = "How to Improve?")
+            SpacerHeight(2.hpr)
+            TitleMediumText(text = "Insights / How to Improve?")
             SpacerHeight(1.hpr)
-            CardContainer {
-                LazyColumn(modifier = Modifier.fillMaxWidth().padding(10.sdp), verticalArrangement = Arrangement.spacedBy(2.sdp)) {
-                    itemsIndexed(listOf("Testing-1","Testing-2","Testing-3","Testing-4")) { index, item ->
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            //TitleSmallText(text = "${index+1}. ")
-                            ResourceImage(
-                                image = R.drawable.ic_bullet,
-                                modifier = Modifier.size(10.sdp)
-                            )
-                            SpacerWidth(5.sdp)
-                            BodySmallText(
-                                text = item,
-                                overrideColor = md_theme_light_placeHolder
-                            )
-                        }
-                    }
+            CardContainer{
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.sdp)
+                ) {
+                    SpacerHeight(10.sdp)
+                    BodySmallText(text =insights, modifier = Modifier.fillMaxWidth().heightIn(min = 150.sdp))
                 }
             }
 

@@ -25,7 +25,7 @@ import com.example.moodbloom.ui.theme.md_theme_light_disable_outline
 fun CardContainer(
     modifier: Modifier = Modifier,
     shape: Shape = MaterialTheme.shapes.medium,
-    shadow: Shadow = LocalShadows.current.medium,
+    shadow: Shadow = LocalShadows.current.none,
     contentAlignment: Alignment = Alignment.TopStart,
     borderColor: Color = MaterialTheme.colorScheme.outline,
     containerColor: Color = MaterialTheme.colorScheme.background,

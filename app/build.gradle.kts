@@ -115,6 +115,11 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.messaging)
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.firestore.ktx)
+   /* implementation(libs.play.services.auth)*/
+
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
 
     // Hilt for dependency injection
     implementation(libs.hilt.android)

@@ -72,8 +72,8 @@ fun <T>DropdownSelectionField(
             readOnly = true,
             placeholder = placeholder,
             label = label,
+            singleLine = true,
             trailing = { ResourceImage(image = R.drawable.ic_dropdown, modifier = Modifier.size(17.sdp))},
-            inputType = InputType.IsLetterOrDigit,
             modifier = Modifier
                 .menuAnchor()
                 .fillMaxWidth()

@@ -38,6 +38,7 @@ import com.example.moodbloom.presentation.components.TextButton
 import com.example.moodbloom.presentation.components.TopAppBar
 import com.example.moodbloom.presentation.components.hpr
 import com.example.moodbloom.presentation.components.sdp
+import com.example.moodbloom.ui.theme.md_theme_light_onSurface
 import com.example.moodbloom.ui.theme.md_theme_light_placeHolder
 import com.example.moodbloom.ui.typo.BodySmallText
 import com.example.moodbloom.ui.typo.DisplayLargeText
@@ -138,7 +139,7 @@ internal fun ExerciseScreen(
              Column(modifier = Modifier.fillMaxWidth().padding(10.sdp)) {
                  BodySmallText(
                      text = selectedExerciseType?.bestFor ?: "",
-                     overrideColor = md_theme_light_placeHolder
+                     overrideColor = md_theme_light_onSurface
                  )
              }
             }
@@ -157,7 +158,7 @@ internal fun ExerciseScreen(
                             SpacerWidth(5.sdp)
                             BodySmallText(
                                 text = item,
-                                overrideColor = md_theme_light_placeHolder
+                                overrideColor = md_theme_light_onSurface
                             )
                         }
                     }
@@ -170,7 +171,7 @@ internal fun ExerciseScreen(
                 Column(modifier = Modifier.fillMaxWidth().padding(10.sdp)) {
                     BodySmallText(
                         text = selectedExerciseType?.tips ?: "",
-                        overrideColor = md_theme_light_placeHolder
+                        overrideColor = md_theme_light_onSurface
                     )
                 }
             }

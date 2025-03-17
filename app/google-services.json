@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "403994826255-rq2raed0epocmgpcl0tv2582g9cski8q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.moodbloom",
+            "certificate_hash": "aaef8bfc2111a46002f0d418e30055c2dbbb03a8"
+          }
+        },
+        {
           "client_id": "403994826255-dm7hvtc6fu07bgr08rvtjd44ava4foue.apps.googleusercontent.com",
           "client_type": 3
         }

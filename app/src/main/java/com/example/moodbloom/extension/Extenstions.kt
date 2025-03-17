@@ -6,7 +6,11 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.net.NetworkInfo
 import android.net.Uri
+import android.os.Build
 import android.util.Base64
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -190,7 +194,17 @@ fun String.isValidEmail(): Boolean {
     return this.isNotEmpty() && android.util.Patterns.EMAIL_ADDRESS.matcher(this).matches()
 }
 
+fun String.isValidPassword():Boolean{
+    return  this.isNotBlank() && this.length>4
+}
 
+
+fun String.isValidName():Boolean{
+    return  this.isNotBlank() && this.length>2
+}
+fun String.isValidUsername():Boolean{
+    return  this.isNotBlank() && this.length>4
+}
 
 
 
@@ -247,4 +261,22 @@ fun Int.formatTime(): String {
 }
 
 
+fun Context.isNetworkAvailable(): Boolean {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        val connectivityManager =
+            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkCapabilities = connectivityManager.activeNetwork ?: return false
+        val actNw = connectivityManager.getNetworkCapabilities(networkCapabilities) ?: return false
+        return when {
+            actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+            actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+            actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+            else -> false
+        }
+    } else {
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
+        return activeNetwork?.isConnectedOrConnecting!!
+    }
+}
 

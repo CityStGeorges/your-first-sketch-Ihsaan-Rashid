@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -76,7 +77,7 @@ internal fun HomeScreen(
                 },
                 negativeButtonText = "Yes",
                 negativeButtonClick = {
-                    onNavigate(ScreensRoute.Login.route)
+                    onNavigate(ScreensRoute.Welcome.route)
                 },
                 onDismiss = {
                     promptsViewModel.updatePrompt(null)
@@ -92,11 +93,11 @@ internal fun HomeScreen(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            SpacerHeight(3.hpr)
+            SpacerHeight(2.hpr)
             ResourceImage(image = R.drawable.ic_logo, modifier = Modifier.height(12.hpr))
-            SpacerHeight(5.hpr)
+            SpacerHeight(2.hpr)
             HeadlineMediumText(text = "Welcome Ihsaan!", fontSize = 48.textSdp)
-            SpacerHeight(3.hpr)
+            SpacerHeight(2.hpr)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 HeadlineMediumText(text = "Your Mood this week:")
                 SpacerWidth(5.sdp)
@@ -106,10 +107,15 @@ internal fun HomeScreen(
                 )
             }
 
-            SpacerHeight(5.hpr)
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(7.sdp)) {
+            SpacerHeight(2.hpr)
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(5.sdp)
+            ) {
                 itemsIndexed(listHomeOptions) { index, item ->
-                    if (item.route=="notificationEnable") {
+                    if (item.route == "notificationEnable") {
                         ItemOptionNotification(
                             item = item,
                             isChecked = isNotificationEnable,
@@ -118,21 +124,20 @@ internal fun HomeScreen(
                                     isNotificationEnable = it
                                 }
                             })
-                    }
-                    else {
+                    } else {
                         ItemOptions(
                             item = item,
                             modifier = Modifier.safeClickable(rippleEnabled = true) {
                                 if (item.route.isNotBlank()) {
-                                      if (item.route=="helpline") {
-                                        val uri = Uri.parse("tel:" +"123456789")
+                                    if (item.route == "helpline") {
+                                        val uri = Uri.parse("tel:" + "123456789")
                                         val intent = Intent(Intent.ACTION_DIAL, uri)
                                         try {
                                             context.startActivity(intent)
                                         } catch (e: SecurityException) {
                                             e.printStackTrace()
                                         }
-                                    }else  if (item.route=="deleteAccount") {
+                                    } else if (item.route == "deleteAccount") {
                                         promptsViewModel.updatePrompt(
                                             PromptTypeShow.Confirmation(
                                                 img = R.drawable.ic_error,
@@ -150,7 +155,7 @@ internal fun HomeScreen(
                                                 }
                                             )
                                         )
-                                    }else{
+                                    } else {
                                         onNavigate(item.route)
                                     }
 
@@ -159,7 +164,6 @@ internal fun HomeScreen(
                     }
                 }
             }
-            SpacerWeight(1f)
             LogoutButton(
                 modifier = Modifier.padding(horizontal = 10.sdp),
                 onClick = {
@@ -193,7 +197,11 @@ fun getHomeOptions(): List<HomeOptionsModel> {
             icon = R.drawable.ic_insights,
             route = ScreensRoute.Insights.route
         ),
-        HomeOptionsModel(title = "Turn on notification", icon = R.drawable.ic_bell, route = "notificationEnable"),
+        HomeOptionsModel(
+            title = "Turn on notification",
+            icon = R.drawable.ic_bell,
+            route = "notificationEnable"
+        ),
         HomeOptionsModel(
             title = "Request to delete account",
             icon = R.drawable.ic_delete_round,

@@ -61,6 +61,7 @@ securityCryptoKtx = "1.0.0"
 activity = "1.9.3"
 constraintlayout = "2.2.0"
 ycharts = "2.1.0"
+playServiceAuth = "20.7.0"
 
 
 [libraries]
@@ -91,6 +92,9 @@ androidx-navigation-compose = { module = "androidx.navigation:navigation-compose
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx" }
+firebase-firestore-ktx = { module = "com.google.firebase:firebase-firestore-ktx" }
+play-services-auth = { module = "com.google.firebase:play-services-auth",version.ref = "playServiceAuth" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging", version.ref = "firebaseMessaging" }
 firebase-messaging-directboot = { module = "com.google.firebase:firebase-messaging-directboot", version.ref = "firebaseMessaging" }
 firebase-messaging-ktx = { module = "com.google.firebase:firebase-messaging-ktx", version.ref = "firebaseMessaging" }

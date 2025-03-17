@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Mood Bloom</string>
     <string name="next">Next</string>
+    <string name="default_web_client_id">AIzaSyCl-0HPzMyk65TvWE35B_nUqeWA9cXtKYA</string>
+    <string name="connected_to_the_internet_and_try_again">Please ensure your device is connected to the internet and try again</string>
+    <string name="we_are_unable_to_process_your_request">We are unable to process your request at this time. Please try again later.</string>
 </resources>

@@ -114,9 +114,10 @@ internal fun CustomHabitTrackerScreen(
             TextInputField(
                 value = habitName,
                 onValueChange = { habitName = it },
+                singleLine = true,
                 placeholder = "Enter habit name",
                 label = "Habit Name",
-                inputType = InputType.IsLetterOrDigit
+                inputType = InputType.IsLetterOrDigitWithSpace
             )
             SpacerHeight(10.sdp)
             CardContainer(
