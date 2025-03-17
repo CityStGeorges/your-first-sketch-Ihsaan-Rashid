@@ -37,6 +37,7 @@ import com.example.moodbloom.presentation.components.ResourceImage
 import com.example.moodbloom.presentation.components.ScreenContainer
 import com.example.moodbloom.presentation.components.TextButton
 import com.example.moodbloom.presentation.components.hpr
+import com.example.moodbloom.presentation.components.safeClickable
 import com.example.moodbloom.presentation.components.sdp
 import com.example.moodbloom.presentation.components.textSdp
 import com.example.moodbloom.routes.ScreensRoute
@@ -119,7 +120,9 @@ internal fun WelcomeScreen(
                     googleSignInLauncher.launch(googleSignInClient.signInIntent)
                 })
             SpacerHeight(4.hpr)
-            LabelMediumText(text = "Forgot Your Password?")
+            LabelMediumText(text = "Forgot Your Password?", modifier = Modifier.safeClickable {
+                onNavigate(ScreensRoute.ForgetPassword.route)
+            })
             SpacerWeight(1f)
         }
     }
