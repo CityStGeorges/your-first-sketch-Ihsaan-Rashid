@@ -2,7 +2,6 @@ package com.example.moodbloom.presentation.screens.home
 
 import android.content.Intent
 import android.net.Uri
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,17 +23,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.content.ContextCompat.startActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.example.moodbloom.MainViewModel
 import com.example.moodbloom.R
+import com.example.moodbloom.data.preferences.DatastorePreferences
+import com.example.moodbloom.data.preferences.PreferenceKey
+import com.example.moodbloom.domain.models.ConfigurationModel
 import com.example.moodbloom.domain.models.HomeOptionsModel
+import com.example.moodbloom.extension.ResponseStates
 import com.example.moodbloom.extension.SpacerHeight
-import com.example.moodbloom.extension.SpacerWeight
 import com.example.moodbloom.extension.SpacerWidth
 import com.example.moodbloom.extension.showToast
+import com.example.moodbloom.presentation.components.HandleApiStates
 import com.example.moodbloom.presentation.components.LogoutButton
 import com.example.moodbloom.presentation.components.PromptTypeShow
 import com.example.moodbloom.presentation.components.PromptsViewModel
@@ -43,6 +46,8 @@ import com.example.moodbloom.presentation.components.hpr
 import com.example.moodbloom.presentation.components.safeClickable
 import com.example.moodbloom.presentation.components.sdp
 import com.example.moodbloom.presentation.components.textSdp
+import com.example.moodbloom.presentation.screens.home.viewModel.ConfigurationViewModel
+import com.example.moodbloom.presentation.screens.home.viewModel.HomeViewModel
 import com.example.moodbloom.routes.ScreensRoute
 import com.example.moodbloom.ui.typo.HeadlineMediumText
 import com.google.firebase.auth.FirebaseUser
@@ -52,19 +57,49 @@ import com.google.firebase.auth.FirebaseUser
 fun HomeScreenRoute(
     onNavigate: (String) -> Unit,
     mainViewModel: MainViewModel,
-    viewModel: HomeViewModel = hiltViewModel()
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    configurationViewModel: ConfigurationViewModel = hiltViewModel()
 ) {
-    HomeScreen(onNavigate = onNavigate,firebaseUser=mainViewModel.firebaseUser)
+
+    val getUserConfigState by configurationViewModel.getUserConfigState.collectAsStateWithLifecycle()
+    val deleteAccountState by homeViewModel.deleteAccountState.collectAsStateWithLifecycle()
+    val adOrUpdateConfigState by configurationViewModel.adOrUpdateConfigState.collectAsStateWithLifecycle()
+    LaunchedEffect(Unit) {
+        configurationViewModel.getUserConfig(mainViewModel.firebaseUser?.uid ?: "")
+    }
+    HomeScreen(onNavigate = onNavigate,
+        getUserConfigState = getUserConfigState,
+        deleteAccountState = deleteAccountState,
+        deleteAccountRequest=homeViewModel::deleteAccount,
+        adOrUpdateConfigState = adOrUpdateConfigState,
+        configurationModel=mainViewModel.configurationModel,
+        updateConfigInMain = {mainViewModel.configurationModel=it},
+        firebaseUser = mainViewModel.firebaseUser,
+        updateConfiguration = {
+            configurationViewModel.adOrUpdateConfig(
+                mainViewModel.configurationModel.copy(
+                    userId = mainViewModel.firebaseUser?.uid ?: "", isEnableNotification = it
+                )
+            )
+        }
+    )
 
 }
 
 @Composable
 internal fun HomeScreen(
     promptsViewModel: PromptsViewModel = hiltViewModel(),
-    firebaseUser: FirebaseUser?=null,
+    firebaseUser: FirebaseUser? = null,
+    getUserConfigState: ResponseStates<ConfigurationModel> = ResponseStates.Idle,
+    configurationModel: ConfigurationModel = ConfigurationModel(),
+    adOrUpdateConfigState: ResponseStates<String> = ResponseStates.Idle,
+    deleteAccountState: ResponseStates<String> = ResponseStates.Idle,
+    deleteAccountRequest: (String)-> Unit = {},
+    updateConfigInMain: (ConfigurationModel) -> Unit = {},
+    updateConfiguration: (Boolean) -> Unit = {},
     onNavigate: (String) -> Unit,
 
-) {
+    ) {
 
     val currentPrompt by promptsViewModel.currentPrompt.collectAsStateWithLifecycle()
     var isNotificationEnable by remember { mutableStateOf(false) }
@@ -100,7 +135,10 @@ internal fun HomeScreen(
             SpacerHeight(2.hpr)
             ResourceImage(image = R.drawable.ic_logo, modifier = Modifier.height(12.hpr))
             SpacerHeight(2.hpr)
-            HeadlineMediumText(text = "Welcome ${firebaseUser?.displayName}!", fontSize = 28.textSdp)
+            HeadlineMediumText(
+                text = "Welcome ${firebaseUser?.displayName}!",
+                fontSize = 28.textSdp
+            )
             SpacerHeight(2.hpr)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 HeadlineMediumText(text = "Your Mood this week:")
@@ -126,6 +164,7 @@ internal fun HomeScreen(
                             onCheckedChange = {
                                 if (it != isNotificationEnable) {
                                     isNotificationEnable = it
+                                    updateConfiguration(it)
                                 }
                             })
                     } else {
@@ -152,7 +191,7 @@ internal fun HomeScreen(
                                                 },
                                                 negativeButtonText = "Yes",
                                                 negativeButtonClick = {
-                                                    context.showToast("Your request for delete account submitted.")
+                                                    deleteAccountRequest(firebaseUser?.uid?:"")
                                                 },
                                                 onDismiss = {
                                                     promptsViewModel.updatePrompt(null)
@@ -177,6 +216,50 @@ internal fun HomeScreen(
             SpacerHeight(5.hpr)
         }
     }
+
+    HandleApiStates(
+        state = getUserConfigState,
+        updatePrompt = promptsViewModel::updatePrompt
+    ) { it ->
+        LaunchedEffect(Unit) {
+            updateConfigInMain(it)
+            isNotificationEnable = it.isEnableNotification
+        }
+    }
+
+    HandleApiStates(
+        state = adOrUpdateConfigState,
+        updatePrompt = promptsViewModel::updatePrompt,
+        onFailure = {
+            LaunchedEffect(Unit) {
+                isNotificationEnable = !isNotificationEnable
+                context.showToast(it)
+            }
+        },
+        onSuccess = {
+            LaunchedEffect(Unit) {
+                updateConfigInMain(configurationModel.copy(isEnableNotification = isNotificationEnable))
+                DatastorePreferences(context).putBoolean(PreferenceKey.isEnableNotification, isNotificationEnable)
+            }
+        }
+    )
+
+    HandleApiStates(
+        state = deleteAccountState,
+        updatePrompt = promptsViewModel::updatePrompt,
+        onSuccess = {
+            LaunchedEffect(Unit) {
+                promptsViewModel.updatePrompt(
+                    PromptTypeShow.Success(
+                        title = "Account Deletion Request",
+                        message = it,
+                        onButtonClick = {},
+                        onDismiss = { promptsViewModel.updatePrompt(null) }
+                    )
+                )
+            }
+        }
+    )
 }
 
 fun getHomeOptions(): List<HomeOptionsModel> {

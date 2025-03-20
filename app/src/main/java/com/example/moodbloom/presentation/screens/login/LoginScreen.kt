@@ -27,6 +27,7 @@ import com.example.moodbloom.extension.isValidEmail
 import com.example.moodbloom.extension.isValidName
 import com.example.moodbloom.extension.isValidPassword
 import com.example.moodbloom.extension.isValidUsername
+import com.example.moodbloom.extension.showToast
 import com.example.moodbloom.presentation.components.HandleApiStates
 import com.example.moodbloom.presentation.components.InputType
 import com.example.moodbloom.presentation.components.PromptTypeShow
@@ -95,7 +96,6 @@ internal fun LoginScreen(
                 singleLine = true,
                 placeholder = "Enter your password",
                 label = "Password",
-                inputType = InputType.IsLetterOrDigit
             )
             SpacerWeight(1f)
             TextButton(

@@ -16,6 +16,7 @@ import com.example.moodbloom.presentation.screens.habittracker.CustomHabitTracke
 import com.example.moodbloom.presentation.screens.habittracker.HabitTrackerRoute
 import com.example.moodbloom.presentation.screens.habittracker.SelectHabitTrackerRoute
 import com.example.moodbloom.presentation.screens.habittracker.SetUpHabitTrackerRoute
+import com.example.moodbloom.presentation.screens.habittracker.UpdateHabitTrackerRoute
 import com.example.moodbloom.presentation.screens.home.HomeScreenRoute
 import com.example.moodbloom.presentation.screens.logdailymood.LogDailyMoodRoute
 import com.example.moodbloom.presentation.screens.login.LoginScreenRoute
@@ -43,53 +44,53 @@ fun MyAppNavHost(
         }
 
         composable(route = ScreensRoute.Welcome.route) {
-            WelcomeScreenRoute(mainViewModel=mainViewModel,onNavigate = {
+            WelcomeScreenRoute(mainViewModel = mainViewModel, onNavigate = {
                 navController.navigateToScreen(it)
             })
         }
         composable(route = ScreensRoute.ForgetPassword.route) {
-            ForgetPasswordScreenRoute(mainViewModel=mainViewModel,onNavigate = {
+            ForgetPasswordScreenRoute(mainViewModel = mainViewModel, onNavigate = {
                 navController.navigateToScreen(it)
             })
         }
         composable(route = ScreensRoute.Login.route) {
-            LoginScreenRoute(mainViewModel=mainViewModel,onNavigate = {
+            LoginScreenRoute(mainViewModel = mainViewModel, onNavigate = {
                 navController.navigateToScreen(it)
             })
         }
         composable(route = ScreensRoute.SignUp.route) {
-            SignUpScreenRoute(mainViewModel=mainViewModel,onNavigate = {
+            SignUpScreenRoute(mainViewModel = mainViewModel, onNavigate = {
                 navController.navigateToScreen(it)
             })
         }
         composable(route = ScreensRoute.Home.route) {
-            HomeScreenRoute(mainViewModel=mainViewModel,onNavigate = {
+            HomeScreenRoute(mainViewModel = mainViewModel, onNavigate = {
                 navController.navigateToScreen(it)
             })
         }
         composable(route = ScreensRoute.LogDailyMood.route) {
-            LogDailyMoodRoute(mainViewModel=mainViewModel,onNavigate = {
+            LogDailyMoodRoute(mainViewModel = mainViewModel, onNavigate = {
                 navController.navigateToScreen(it)
             }, onBackClick = {
                 navController.popBackStack()
             })
         }
         composable(route = ScreensRoute.MoodTrends.route) {
-            MoodTrendsScreenRoute(mainViewModel=mainViewModel,onNavigate = {
+            MoodTrendsScreenRoute(mainViewModel = mainViewModel, onNavigate = {
                 navController.navigateToScreen(it)
             }, onBackClick = {
                 navController.popBackStack()
             })
         }
         composable(route = ScreensRoute.HabitTracker.route) {
-            HabitTrackerRoute(mainViewModel=mainViewModel,onNavigate = {
+            HabitTrackerRoute(mainViewModel = mainViewModel, onNavigate = {
                 navController.navigateToScreen(it)
             }, onBackClick = {
                 navController.popBackStack()
             })
         }
         composable(route = ScreensRoute.SelectHabitTracker.route) {
-            SelectHabitTrackerRoute(mainViewModel=mainViewModel,onNavigate = {
+            SelectHabitTrackerRoute(mainViewModel = mainViewModel, onNavigate = {
                 navController.navigateToScreen(it)
             }, onBackClick = {
                 navController.popBackStack()
@@ -97,39 +98,44 @@ fun MyAppNavHost(
         }
 
         composable(route = ScreensRoute.CustomHabitTracker.route) {
-            CustomHabitTrackerRoute(mainViewModel=mainViewModel,onNavigate = {
-                navController.popBackStack()
-                navController.popBackStack()
+            CustomHabitTrackerRoute(mainViewModel = mainViewModel, onNavigate = {
+               navController.navigateWithPopUpTo(ScreensRoute.HabitTracker.route,ScreensRoute.CustomHabitTracker.route)
             }, onBackClick = {
                 navController.popBackStack()
             })
         }
-        composable(route = ScreensRoute.CustomHabitTracker.route) {
-            SetUpHabitTrackerRoute(mainViewModel=mainViewModel,onNavigate = {
+        composable(route = ScreensRoute.SetUpHabitTracker.route) {
+            SetUpHabitTrackerRoute(mainViewModel = mainViewModel, onNavigate = {
+                navController.navigateWithPopUpTo(ScreensRoute.HabitTracker.route,ScreensRoute.SetUpHabitTracker.route)
+            }, onBackClick = {
                 navController.popBackStack()
-                navController.popBackStack()
+            })
+        }
+        composable(route = ScreensRoute.EditHabitTracker.route) {
+            UpdateHabitTrackerRoute(mainViewModel = mainViewModel, onNavigate = {
+                navController.navigateWithPopUpTo(ScreensRoute.HabitTracker.route,ScreensRoute.EditHabitTracker.route)
             }, onBackClick = {
                 navController.popBackStack()
             })
         }
 
-        composable(route =ScreensRoute.BreathingExercise.route) {
-            SelectExerciseRoute(mainViewModel=mainViewModel,onNavigate = {
+        composable(route = ScreensRoute.BreathingExercise.route) {
+            SelectExerciseRoute(mainViewModel = mainViewModel, onNavigate = {
                 navController.navigateToScreen(it)
             }, onBackClick = {
                 navController.popBackStack()
             })
         }
 
-        composable(route =ScreensRoute.Exercise.route) {
-            ExerciseRoute(mainViewModel=mainViewModel,onNavigate = {
+        composable(route = ScreensRoute.Exercise.route) {
+            ExerciseRoute(mainViewModel = mainViewModel, onNavigate = {
                 navController.popBackStack()
             }, onBackClick = {
                 navController.popBackStack()
             })
         }
-        composable(route =ScreensRoute.Insights.route) {
-            InsightsScreenRoute(mainViewModel=mainViewModel,onNavigate = {
+        composable(route = ScreensRoute.Insights.route) {
+            InsightsScreenRoute(mainViewModel = mainViewModel, onNavigate = {
                 navController.popBackStack()
             }, onBackClick = {
                 navController.popBackStack()
@@ -150,5 +156,11 @@ fun NavController.navigateToScreen(route: String, navOptions: NavOptions? = null
 fun NavController.navigateSplashToOther(route: String) {
     navigate(route = route) {
         popUpTo(route = ScreensRoute.Splash.route) { inclusive = true }
+    }
+}
+
+fun NavController.navigateWithPopUpTo(route:String, popUpToRoute:String, isInclusive:Boolean = true) {
+    navigate(route = route) {
+        popUpTo(route = popUpToRoute) { inclusive = isInclusive }
     }
 }

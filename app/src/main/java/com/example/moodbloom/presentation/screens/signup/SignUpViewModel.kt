@@ -3,7 +3,7 @@ package com.example.moodbloom.presentation.screens.signup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moodbloom.domain.models.auth.RegisterUserRequestModel
-import com.example.moodbloom.domain.usecases.RegisterUseCase
+import com.example.moodbloom.domain.usecases.auth.RegisterUseCase
 import com.example.moodbloom.extension.ResponseStates
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,6 +22,7 @@ class SignUpViewModel @Inject constructor(
 
     fun registerUser(request: RegisterUserRequestModel) {
         viewModelScope.launch {
+            _userState.value = ResponseStates.Loading
             _userState.value = registerUseCase.invoke(request)
         }
     }

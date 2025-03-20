@@ -26,6 +26,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.example.moodbloom.MainViewModel
 import com.example.moodbloom.R
+import com.example.moodbloom.domain.models.ConfigurationModel
 import com.example.moodbloom.domain.models.ExerciseModel
 import com.example.moodbloom.extension.SpacerHeight
 import com.example.moodbloom.extension.SpacerWidth
@@ -38,6 +39,7 @@ import com.example.moodbloom.presentation.components.TextButton
 import com.example.moodbloom.presentation.components.TopAppBar
 import com.example.moodbloom.presentation.components.hpr
 import com.example.moodbloom.presentation.components.sdp
+import com.example.moodbloom.presentation.screens.home.viewModel.ConfigurationViewModel
 import com.example.moodbloom.ui.theme.md_theme_light_onSurface
 import com.example.moodbloom.ui.theme.md_theme_light_placeHolder
 import com.example.moodbloom.ui.typo.BodySmallText
@@ -54,14 +56,14 @@ fun ExerciseRoute(
     mainViewModel: MainViewModel,
     viewModel: ExerciseViewModel = hiltViewModel()
 ) {
-    val context = LocalContext.current
-    val exerciseList by viewModel.listExercise.collectAsStateWithLifecycle()
+
     LaunchedEffect(Unit) {
         viewModel.getExerciseList()
     }
     ExerciseScreen(
         selectedExerciseType = mainViewModel.selectedExercise,
         onNavigate = onNavigate,
+        configurationModel=mainViewModel.configurationModel,
         onBackClick = onBackClick
     )
 }
@@ -70,6 +72,8 @@ fun ExerciseRoute(
 internal fun ExerciseScreen(
     promptsViewModel: PromptsViewModel = hiltViewModel(), onNavigate: (String) -> Unit,
     selectedExerciseType:ExerciseModel?= null,
+    configurationModel: ConfigurationModel = ConfigurationModel(),
+    updateConfigInMain: (ConfigurationModel) -> Unit = {},
     onBackClick: () -> Unit
 ) {
 

@@ -3,8 +3,7 @@ package com.example.moodbloom.presentation.screens.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moodbloom.domain.models.auth.LoginRequestModel
-import com.example.moodbloom.domain.models.auth.RegisterUserRequestModel
-import com.example.moodbloom.domain.usecases.LoginUseCase
+import com.example.moodbloom.domain.usecases.auth.LoginUseCase
 import com.example.moodbloom.extension.ResponseStates
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,6 +23,7 @@ class LoginViewModel @Inject constructor(
 
     fun loginUser(request: LoginRequestModel) {
         viewModelScope.launch {
+            _userState.value = ResponseStates.Loading
             _userState.value = loginUseCase.invoke(request)
         }
     }

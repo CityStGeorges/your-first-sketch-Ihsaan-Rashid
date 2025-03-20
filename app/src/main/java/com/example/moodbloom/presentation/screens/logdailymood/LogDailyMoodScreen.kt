@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,9 +24,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.example.moodbloom.MainViewModel
 import com.example.moodbloom.R
-import com.example.moodbloom.domain.models.MoodsModel
+import com.example.moodbloom.domain.models.LogMoodsRequest
+import com.example.moodbloom.extension.MoodType
+import com.example.moodbloom.extension.ResponseStates
 import com.example.moodbloom.extension.SpacerHeight
 import com.example.moodbloom.extension.SpacerWeight
+import com.example.moodbloom.presentation.components.HandleApiStates
 import com.example.moodbloom.presentation.components.PromptTypeShow
 import com.example.moodbloom.presentation.components.PromptsViewModel
 import com.example.moodbloom.presentation.components.ResourceImage
@@ -46,43 +50,66 @@ fun LogDailyMoodRoute(
     viewModel: LogDailyViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    LogDailyMoodScreen(onNavigate = onNavigate, onBackClick = onBackClick)
+    val logMoodState by viewModel.logMoodState.collectAsStateWithLifecycle()
+    LogDailyMoodScreen(
+        onNavigate = {
+            viewModel.clearLogMoodState()
+            onNavigate(it)
+        },
+        logMoodState = logMoodState,
+        onBackClick = onBackClick,
+        userId = mainViewModel.firebaseUser?.uid ?: "",
+        onLogMoodCall = viewModel::logMood
+    )
 }
 
 @Composable
 internal fun LogDailyMoodScreen(
-    promptsViewModel: PromptsViewModel = hiltViewModel(), onNavigate: (String) -> Unit,
-    onBackClick: () -> Unit
+    promptsViewModel: PromptsViewModel = hiltViewModel(),
+    onNavigate: (String) -> Unit,
+    onBackClick: () -> Unit,
+    logMoodState: ResponseStates<String> = ResponseStates.Idle,
+    userId: String = "",
+    onLogMoodCall: (LogMoodsRequest) -> Unit
 ) {
 
     val currentPrompt by promptsViewModel.currentPrompt.collectAsStateWithLifecycle()
-    var selectedMoodItem:MoodsModel? by remember { mutableStateOf(MoodsModel(title = "Very Happy", anim = R.raw.anim2_mood_very_happy,"VHAPPY")) }
+    var selectedMoodItem: MoodType? by remember {
+        mutableStateOf(
+            MoodType.VHAPPY
+        )
+    }
     var aboutMood by remember { mutableStateOf("") }
     ScreenContainer(currentPrompt = currentPrompt) {
         Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TopAppBar(title = "Log your Mood today"){
+            TopAppBar(title = "Log your Mood today") {
                 onBackClick()
             }
             SpacerHeight(5.hpr)
             LazyRow(horizontalArrangement = Arrangement.spacedBy(3.sdp)) {
-                itemsIndexed(getMoodsList()){index, item ->
-                    Box(modifier = Modifier.weight(1f) , contentAlignment = Alignment.TopEnd) {
-                        ItemMoodEmoji(item=item,selectedMoodItem=selectedMoodItem){
-                            selectedMoodItem=it
+                itemsIndexed(getMoodsList()) { index, item ->
+                    Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.TopEnd) {
+                        ItemMoodEmoji(item = item, selectedMoodItem = selectedMoodItem) {
+                            selectedMoodItem = it
                         }
                     }
                 }
             }
             SpacerHeight(2.hpr)
-            selectedMoodItem?.let {item->
-                Column(modifier = Modifier.fillMaxWidth(),horizontalAlignment = Alignment.CenterHorizontally) {
-                    ResourceImage(image = LottieCompositionSpec.RawRes(item.anim) , modifier = Modifier.size(100.sdp))
+            selectedMoodItem?.let { item ->
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    ResourceImage(
+                        image = LottieCompositionSpec.RawRes(item.emoji),
+                        modifier = Modifier.size(100.sdp)
+                    )
                     HeadlineMediumText(text = item.title)
                 }
-            }?:run {
+            } ?: run {
                 SpacerHeight(120.sdp)
             }
             TextInputField(
@@ -95,46 +122,61 @@ internal fun LogDailyMoodScreen(
                 maxLines = 5
             )
             SpacerWeight(1f)
-            var goToTrends=false
-            TextButton(modifier = Modifier.padding(horizontal = 10.sdp), enabled = selectedMoodItem!=null, text = "Save Mood Entry", onClick = {
-                    promptsViewModel.updatePrompt(
-                        PromptTypeShow.Confirmation(
-                            img = R.drawable.ic_success,
-                            title = "Mood entry saved!",
-                            message = "Your mood entry has been successfully logged.",
-                            positiveButtonText = "View mood trends",
-                            positiveButtonClick = {
-                                goToTrends= true
-
-                            },
-                            negativeButtonText = "Go to home",
-                            negativeButtonClick = {
-
-                            },
-                            onDismiss = {
-                                promptsViewModel.updatePrompt(null)
-                                if(goToTrends){
-                                    onNavigate(ScreensRoute.MoodTrends.route)
-                                }else{
-                                    onBackClick()
-                                }
-                            }
+            TextButton(modifier = Modifier.padding(horizontal = 10.sdp),
+                enabled = selectedMoodItem != null,
+                text = "Save Mood Entry",
+                onClick = {
+                    onLogMoodCall(
+                        LogMoodsRequest(
+                            userId = userId,
+                            title = selectedMoodItem?.title ?: "",
+                            aboutMood = aboutMood,
+                            type = selectedMoodItem?.type ?: "",
+                            moodScore = selectedMoodItem?.moodScore ?: 0,
                         )
                     )
                 })
             SpacerHeight(5.hpr)
         }
     }
+
+
+    HandleApiStates(
+        state = logMoodState, updatePrompt = promptsViewModel::updatePrompt
+    ) { it ->
+        LaunchedEffect(Unit) {
+            var goToTrends = false
+            promptsViewModel.updatePrompt(PromptTypeShow.Confirmation(img = R.drawable.ic_success,
+                title = "Mood entry saved!",
+                message = it,
+                positiveButtonText = "View mood trends",
+                positiveButtonClick = {
+                    goToTrends = true
+
+                },
+                negativeButtonText = "Go to home",
+                negativeButtonClick = {
+                },
+                onDismiss = {
+                    promptsViewModel.updatePrompt(null)
+                    if (goToTrends) {
+                        onNavigate(ScreensRoute.MoodTrends.route)
+                    } else {
+                        onBackClick()
+                    }
+                }))
+        }
+    }
 }
 
-fun getMoodsList():List<MoodsModel>{
-   return listOf(
-        MoodsModel(title = "Very Happy", anim = R.raw.anim2_mood_very_happy,"VHAPPY", moodScore = 6),
-        MoodsModel(title = "Happy", anim = R.raw.anim2_mood_happy,"HAPPY", moodScore = 5),
-        MoodsModel(title = "Natural", anim = R.raw.anim2_mood_natural,"NATURAL", moodScore = 4),
-        MoodsModel(title = "Uncertain", anim = R.raw.anim2_mood_uncertain,"UNCERTAIN", moodScore = 3),
-        MoodsModel(title = "Sad", anim = R.raw.anim2_mood_sad,"SAD", moodScore = 2),
-        MoodsModel(title = "Very Sad", anim = R.raw.anim2_mood_very_sad,"VSAD", moodScore = 1),
-        MoodsModel(title = "Angry", anim = R.raw.anim2_mood_angry,"ANGRY", moodScore = 0),
+fun getMoodsList(): List<MoodType> {
+    return listOf(
+       MoodType.VHAPPY,
+       MoodType.HAPPY,
+       MoodType.NATURAL,
+       MoodType.UNCERTAIN,
+       MoodType.SAD,
+       MoodType.VSAD,
+       MoodType.ANGRY,
     )
 }

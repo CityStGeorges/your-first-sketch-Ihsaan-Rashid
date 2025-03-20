@@ -58,6 +58,7 @@ dependencies {
 
     // Compose BOM for managing Compose dependencies
     implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.work.runtime.ktx)
 
     // AndroidX JUnit for instrumentation tests
     androidTestImplementation(libs.androidx.junit)
@@ -119,7 +120,7 @@ dependencies {
     implementation(libs.firebase.firestore.ktx)
    /* implementation(libs.play.services.auth)*/
 
-    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation(libs.gms.play.services.auth)
 
     // Hilt for dependency injection
     implementation(libs.hilt.android)
@@ -138,4 +139,12 @@ dependencies {
     implementation (libs.androidx.ui.text.google.fonts)
 
     implementation (libs.ycharts)
+
+    //DataStore
+    implementation(libs.datastore.preferences)
+
+    //retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+
 }

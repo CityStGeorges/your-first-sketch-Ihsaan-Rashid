@@ -88,8 +88,12 @@ internal fun WelcomeScreen(
     val googleSignInLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-            val account = task.result
-            account?.idToken?.let {onGoogleSignInRequest(it) }
+            try {
+                val account = task.result
+                account?.idToken?.let {onGoogleSignInRequest(it) }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
     val currentPrompt by promptsViewModel.currentPrompt.collectAsStateWithLifecycle()
@@ -128,7 +132,7 @@ internal fun WelcomeScreen(
     }
     HandleApiStates(
         state = userState,
-        updatePrompt = promptsViewModel::updatePrompt
+        updatePrompt = promptsViewModel::updatePrompt,
     ) { it ->
         LaunchedEffect(Unit) {
             if (it != null) {

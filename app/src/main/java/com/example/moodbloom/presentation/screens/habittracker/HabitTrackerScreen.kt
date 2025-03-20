@@ -28,11 +28,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.moodbloom.MainViewModel
 import com.example.moodbloom.R
-import com.example.moodbloom.data.DataHelper.getDummyHabitsList
 import com.example.moodbloom.domain.models.HabitTrackerModel
+import com.example.moodbloom.extension.ResponseStates
 import com.example.moodbloom.extension.SpacerHeight
 import com.example.moodbloom.extension.SpacerWeight
 import com.example.moodbloom.extension.showToast
+import com.example.moodbloom.presentation.components.HandleApiStates
 import com.example.moodbloom.presentation.components.PromptsViewModel
 import com.example.moodbloom.presentation.components.ResourceImage
 import com.example.moodbloom.presentation.components.ScreenContainer
@@ -41,7 +42,9 @@ import com.example.moodbloom.presentation.components.hpr
 import com.example.moodbloom.presentation.components.safeClickable
 import com.example.moodbloom.presentation.components.sdp
 import com.example.moodbloom.presentation.screens.habittracker.items.ItemHabitProgress
+import com.example.moodbloom.reminders.HabitReminderScheduler
 import com.example.moodbloom.routes.ScreensRoute
+import com.example.moodbloom.ui.typo.TitleSmallText
 
 
 @Composable
@@ -52,22 +55,48 @@ fun HabitTrackerRoute(
     viewModel: HabitTrackerViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    HabitTrackerScreen(onNavigate = onNavigate, onBackClick = onBackClick)
+    val listHabitState by viewModel.listHabitState.collectAsStateWithLifecycle()
+    val updateHabitState by viewModel.updateHabitState.collectAsStateWithLifecycle()
+    val deleteHabitState by viewModel.deleteHabitState.collectAsStateWithLifecycle()
+    LaunchedEffect(Unit) {
+        viewModel.listHabit(mainViewModel.firebaseUser?.uid?:"")
+    }
+    HabitTrackerScreen(onNavigate = onNavigate,
+        onDeleteClick={
+            viewModel.deleteHabit(habitTitle = it, userId = mainViewModel.firebaseUser?.uid?:"")
+        },
+        onEditClick = {
+            mainViewModel.selectedHabitTracker=it
+            viewModel.clearStates()
+            onNavigate(ScreensRoute.EditHabitTracker.route)
+        },
+        listHabitState=listHabitState,
+        deleteHabitState=deleteHabitState,
+        updateHabitState=updateHabitState,
+        updateHabit={
+        viewModel.updateHabit(it)
+    }, onBackClick = onBackClick)
 }
 
 @Composable
 internal fun HabitTrackerScreen(
-    promptsViewModel: PromptsViewModel = hiltViewModel(), onNavigate: (String) -> Unit,
+    promptsViewModel: PromptsViewModel = hiltViewModel(),
+    onNavigate: (String) -> Unit,
+    updateHabit:(HabitTrackerModel)->Unit = {},
+    onDeleteClick:(title:String)->Unit = {},
+    onEditClick:(item:HabitTrackerModel)->Unit = {},
+    listHabitState:ResponseStates<List<HabitTrackerModel>> = ResponseStates.Idle,
+    updateHabitState:ResponseStates<String> = ResponseStates.Idle,
+    deleteHabitState:ResponseStates<String> = ResponseStates.Idle,
     onBackClick: () -> Unit
 ) {
 
     val context = LocalContext.current
     val currentPrompt by promptsViewModel.currentPrompt.collectAsStateWithLifecycle()
-    LaunchedEffect(Unit) {
-        context.showToast("Long Press to complete your today habit")
-    }
+
     val mediaPlayer = remember { MediaPlayer() }
-    var listHabitTracker: List<HabitTrackerModel> by remember { mutableStateOf(getDummyHabitsList()) }
+    var showEditDeleteIcons:Boolean by remember { mutableStateOf(false) }
+    var listHabitTracker: List<HabitTrackerModel> by remember { mutableStateOf(listOf()) }
     ScreenContainer(currentPrompt = currentPrompt) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -76,29 +105,56 @@ internal fun HabitTrackerScreen(
             TopAppBar(title = "Your Habits") {
                 onBackClick()
             }
-            SpacerHeight(5.hpr)
-            LazyVerticalGrid(
-                horizontalArrangement = Arrangement.spacedBy(2.sdp),
-                verticalArrangement = Arrangement.spacedBy(3.sdp),
-                columns = GridCells.Fixed(4)
-            ) {
-                itemsIndexed(listHabitTracker) { index, item ->
-                    ItemHabitProgress(
-                        modifierContent = Modifier
-                            .width(60.sdp)
-                            .size(60.sdp),
-                        paddingContent = 10.sdp,
-                        context = context,
-                        item = item
-                    ) {
-                        if(item.completedPerDay<item.totalPerDay){
-                            playSuccessTune(context=context,mediaPlayer=mediaPlayer)
-                            listHabitTracker[index].completedPerDay++
+            SpacerHeight(3.hpr)
+            if(listHabitTracker.isNotEmpty()) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                    ResourceImage(image = if(showEditDeleteIcons){ R.drawable.ic_cross}else{ R.drawable.ic_edit}, modifier = Modifier.safeClickable { showEditDeleteIcons=!showEditDeleteIcons }.size(22.sdp))
+                }
+            }else{
+                SpacerHeight(2.hpr)
+            }
+            if(listHabitTracker.isEmpty()){
+                Column (modifier = Modifier.fillMaxWidth().weight(1f), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center){
+                    ResourceImage(image = R.drawable.ic_info,modifier = Modifier.size(24.sdp))
+                    SpacerHeight(5.sdp)
+                    TitleSmallText(text = "Currently you don't have any habits to track")
+                }
+            }else{
+                LazyVerticalGrid(
+                    horizontalArrangement = Arrangement.spacedBy(2.sdp),
+                    verticalArrangement = Arrangement.spacedBy(3.sdp),
+                    columns = GridCells.Fixed(4)
+                ) {
+                    itemsIndexed(listHabitTracker) { index, item ->
+                        ItemHabitProgress(
+                            modifierContent = Modifier
+                                .width(60.sdp)
+                                .size(60.sdp),
+                            paddingContent = 10.sdp,
+                            context = context,
+                            showEditDeleteIcons=showEditDeleteIcons,
+                            item = item,
+                            onDeleteClick = {
+                                showEditDeleteIcons=false
+                                onDeleteClick(item.title)
+                            },
+                            onEditClick = {
+                                showEditDeleteIcons=false
+                                onEditClick(item)
+                            }
+                        ) {
+                            if(item.completedPerDay<item.totalPerDay){
+                                playSuccessTune(context=context,mediaPlayer=mediaPlayer)
+                                listHabitTracker[index].completedPerDay++
+                                showEditDeleteIcons=false
+                                updateHabit(listHabitTracker[index])
+                            }
                         }
                     }
                 }
+                SpacerWeight(1f)
             }
-            SpacerWeight(1f)
+
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                 ResourceImage(modifier = Modifier
                     .size(45.sdp)
@@ -109,6 +165,31 @@ internal fun HabitTrackerScreen(
             SpacerHeight(1.hpr)
 
         }
+    }
+
+    HandleApiStates(
+        state = listHabitState, updatePrompt = promptsViewModel::updatePrompt
+    ) { it ->
+        LaunchedEffect(Unit) {
+            if(it.isNotEmpty()){
+                HabitReminderScheduler.setHabitReminder(context = context, habitList = it)
+                context.showToast("Press and hold to complete your today habit task")
+            }else{
+                HabitReminderScheduler.cancelAllHabitReminders(context = context)
+            }
+            listHabitTracker = it
+        }
+    }
+
+    HandleApiStates(
+        state = updateHabitState, updatePrompt = promptsViewModel::updatePrompt
+    ) { it -> }
+
+
+    HandleApiStates(
+        state = deleteHabitState, updatePrompt = promptsViewModel::updatePrompt
+    ) { it ->
+
     }
 }
 

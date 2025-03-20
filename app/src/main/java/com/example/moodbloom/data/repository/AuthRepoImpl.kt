@@ -18,9 +18,10 @@ import javax.inject.Inject
 
 class AuthRepoImpl @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val firestore: FirebaseFirestore,
+    private val auth: FirebaseAuth,
 ) : AuthRepo {
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+
     override suspend fun signInWithGoogle(idToken: String): ResponseStates<FirebaseUser?> {
         return try {
             if (context.isNetworkAvailable()) {

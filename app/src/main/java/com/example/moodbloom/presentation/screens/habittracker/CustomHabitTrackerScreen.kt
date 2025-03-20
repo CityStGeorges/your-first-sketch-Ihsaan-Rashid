@@ -15,8 +15,11 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerDefaults
+import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,10 +33,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.moodbloom.MainViewModel
 import com.example.moodbloom.R
 import com.example.moodbloom.data.DataHelper.getDaysList
+import com.example.moodbloom.domain.models.HabitTrackerModel
+import com.example.moodbloom.extension.ResponseStates
 import com.example.moodbloom.extension.SpacerHeight
 import com.example.moodbloom.extension.SpacerWeight
 import com.example.moodbloom.extension.SpacerWidth
 import com.example.moodbloom.presentation.components.CardContainer
+import com.example.moodbloom.presentation.components.HandleApiStates
 import com.example.moodbloom.presentation.components.InputType
 import com.example.moodbloom.presentation.components.PromptsViewModel
 import com.example.moodbloom.presentation.components.ResourceImage
@@ -57,13 +63,24 @@ fun CustomHabitTrackerRoute(
     viewModel: HabitTrackerViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    CustomHabitTrackerScreen(onNavigate = onNavigate, onBackClick = onBackClick)
+    val insertHabitState by viewModel.insertHabitState.collectAsStateWithLifecycle()
+    CustomHabitTrackerScreen(
+        onNavigate = onNavigate,
+        insertHabitState = insertHabitState,
+        insertNewHabit = viewModel::insertHabit,
+        userId = mainViewModel.firebaseUser?.uid ?: "",
+        onBackClick = onBackClick
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CustomHabitTrackerScreen(
-    promptsViewModel: PromptsViewModel = hiltViewModel(), onNavigate: () -> Unit,
+    promptsViewModel: PromptsViewModel = hiltViewModel(),
+    insertHabitState: ResponseStates<String> = ResponseStates.Idle,
+    insertNewHabit: (HabitTrackerModel) -> Unit = {},
+    userId: String = "",
+    onNavigate: () -> Unit,
     onBackClick: () -> Unit
 ) {
 
@@ -80,11 +97,15 @@ internal fun CustomHabitTrackerScreen(
     )
 
 
-
     var showTimePicker by remember { mutableStateOf(false) }
-    var isTimeSelected by remember { mutableStateOf(false) }
     var executionPerDay by remember { mutableStateOf(1) }
-    var listDays by remember { mutableStateOf(getDaysList()) }
+
+    var listDays by remember {
+        mutableStateOf(getDaysList())
+    }
+    var listReminders:MutableList<String> by remember { mutableStateOf(mutableListOf()) }
+    var selectedIndex=-1
+
     ScreenContainer(currentPrompt = currentPrompt) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -99,7 +120,8 @@ internal fun CustomHabitTrackerScreen(
                 borderColor = MaterialTheme.colorScheme.outline
             ) {
                 Column(
-                    modifier = Modifier.size(70.sdp)
+                    modifier = Modifier
+                        .size(70.sdp)
                         .padding(10.sdp),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -107,7 +129,8 @@ internal fun CustomHabitTrackerScreen(
                     ResourceImage(
                         image = R.drawable.ic_habit_custom,
                         modifier = Modifier
-                            .size(45.sdp))
+                            .size(45.sdp)
+                    )
                 }
             }
             SpacerHeight(20.sdp)
@@ -183,29 +206,7 @@ internal fun CustomHabitTrackerScreen(
                 }
             }
             SpacerHeight(10.sdp)
-            if (!isTimeSelected) {
-                CardContainer(
-                    modifier = Modifier.safeClickable {
-                        showTimePicker = true
-                    },
-                    containerColor = MaterialTheme.colorScheme.background,
-                    borderColor = MaterialTheme.colorScheme.outline
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.sdp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        TitleSmallText(text = "Add Reminder")
-                        SpacerWeight(1f)
-                        ResourceImage(
-                            image = R.drawable.ic_bell_reminder,
-                            modifier = Modifier.size(22.sdp)
-                        )
-                    }
-                }
-            } else {
+            listReminders.forEachIndexed { index, item ->
                 CardContainer(
                     containerColor = MaterialTheme.colorScheme.background,
                     borderColor = MaterialTheme.colorScheme.outline
@@ -216,19 +217,51 @@ internal fun CustomHabitTrackerScreen(
                             .padding(10.sdp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        TitleSmallText(text = "${timePickerState.hour}:${timePickerState.minute}", modifier = Modifier.safeClickable {
-                            showTimePicker = true
-                        })
+                        TitleSmallText(
+                            text = item,
+                            modifier = Modifier.safeClickable {
+                                timePickerState = TimePickerState(
+                                    initialHour = item.substringBefore(":").toInt()?:0,
+                                    initialMinute = item.substringAfter(":").toInt()?:0,
+                                    is24Hour = true,
+                                )
+                                selectedIndex=index
+                                showTimePicker = true
+
+                            })
                         SpacerWeight(1f)
                         ResourceImage(
                             image = R.drawable.ic_delete,
                             modifier = Modifier
                                 .size(22.sdp)
                                 .safeClickable {
-                                    isTimeSelected = false
+                                    listReminders.remove(item)
                                 }
                         )
                     }
+                }
+                SpacerHeight(10.sdp)
+            }
+            CardContainer(
+                modifier = Modifier.safeClickable {
+                    showTimePicker = true
+                    selectedIndex=-1
+                },
+                containerColor = MaterialTheme.colorScheme.background,
+                borderColor = MaterialTheme.colorScheme.outline
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.sdp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TitleSmallText(text = "Add Reminder")
+                    SpacerWeight(1f)
+                    ResourceImage(
+                        image = R.drawable.ic_bell_reminder,
+                        modifier = Modifier.size(22.sdp)
+                    )
                 }
             }
             SpacerWeight(1f)
@@ -237,7 +270,17 @@ internal fun CustomHabitTrackerScreen(
                 text = "Add To My Habits",
                 onClick = {
                     if (listDays.find { it.isSelected } != null) {
-                        onNavigate()
+                        insertNewHabit(
+                            HabitTrackerModel(
+                                userId = userId,
+                                title = habitName,
+                                iconUrl = "R.drawable.ic_habit_custom",
+                                selectedDays = listDays.filter { it.isSelected }.map { it.title },
+                                totalPerDay = executionPerDay,
+                                completedPerDay = 0,
+                                reminderTimes = listReminders.toList()
+                            )
+                        )
                     }
                 })
             SpacerHeight(5.hpr)
@@ -255,20 +298,31 @@ internal fun CustomHabitTrackerScreen(
                         borderColor = MaterialTheme.colorScheme.outline
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            TimePicker(state = timePickerState)
+                            SpacerHeight(20.sdp)
+                            TimePicker(state = timePickerState, colors = TimePickerDefaults.colors(containerColor=MaterialTheme.colorScheme.primary))
                             SpacerHeight(10.sdp)
                             Row(modifier = Modifier.fillMaxWidth()) {
-                                TextButton(modifier = Modifier.weight(1f).padding(horizontal = 10.sdp),
+                                TextButton(modifier = Modifier
+                                    .weight(1f)
+                                    .padding(horizontal = 10.sdp),
                                     text = "Set Time",
                                     onClick = {
                                         showTimePicker = false
-                                        isTimeSelected = true
+                                        if (selectedIndex!=-1 && selectedIndex<listReminders.size){
+                                            listReminders[selectedIndex]="${timePickerState.hour.toString().takeIf { it.length==2 }?:"0${timePickerState.hour}"}:${timePickerState.minute.toString().takeIf { it.length==2 }?:"0${timePickerState.minute}"}"
+                                        }else{
+                                            listReminders.add("${timePickerState.hour.toString().takeIf { it.length==2 }?:"0${timePickerState.hour}"}:${timePickerState.minute.toString().takeIf { it.length==2 }?:"0${timePickerState.minute}"}" )
+                                        }
+                                        selectedIndex=-1
                                     })
-                                    SpacerWidth(5.sdp)
-                                TextButton(modifier = Modifier.weight(1f).padding(horizontal = 10.sdp),
+                                SpacerWidth(5.sdp)
+                                TextButton(modifier = Modifier
+                                    .weight(1f)
+                                    .padding(horizontal = 10.sdp),
                                     text = "Cancel",
                                     onClick = {
                                         showTimePicker = false
+                                        selectedIndex=-1
                                     })
                             }
                             SpacerHeight(10.sdp)
@@ -278,6 +332,15 @@ internal fun CustomHabitTrackerScreen(
             }
 
         }
+    }
+
+    HandleApiStates(
+        state = insertHabitState, updatePrompt = promptsViewModel::updatePrompt
+    ) { it ->
+        LaunchedEffect(Unit) {
+            onNavigate()
+        }
+
     }
 }
 

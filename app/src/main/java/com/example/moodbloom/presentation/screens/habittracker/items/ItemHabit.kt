@@ -7,11 +7,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -31,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import com.example.moodbloom.R
 import com.example.moodbloom.domain.models.HabitTrackerModel
+import com.example.moodbloom.extension.SpacerWeight
 import com.example.moodbloom.extension.getDrawableResourceId
 import com.example.moodbloom.presentation.components.CardContainer
 import com.example.moodbloom.presentation.components.ResourceImage
@@ -92,12 +95,15 @@ fun ItemHabitProgress(
     context: Context,
     modifier: Modifier = Modifier,
     modifierContent: Modifier = Modifier,
+    showEditDeleteIcons:Boolean= false,
     paddingContent: Dp = 10.sdp,
     containerColor: Color = MaterialTheme.colorScheme.primaryContainer,
     borderColor: Color = MaterialTheme.colorScheme.outline,
     shape: Shape = MaterialTheme.shapes.medium,
     shadow: Shadow = LocalShadows.current.light,
     item: HabitTrackerModel,
+    onEditClick: () -> Unit = {},
+    onDeleteClick: () -> Unit = {},
     onComplete: () -> Unit = {}
 ) {
     var progress by remember { mutableStateOf(item.completedPerDay.toFloat() / item.totalPerDay.toFloat()) }
@@ -156,6 +162,7 @@ fun ItemHabitProgress(
                         .background(color = MaterialTheme.colorScheme.primary.copy(0.5f))
                         .align(alignment = Alignment.BottomCenter)
                 ) { }
+                if(!showEditDeleteIcons){
                 if (item.completedPerDay>=item.totalPerDay) {
                     ResourceImage(
                         image = R.drawable.ic_success,
@@ -164,6 +171,26 @@ fun ItemHabitProgress(
                             .padding(2.sdp)
                             .align(alignment = Alignment.TopStart)
                     )
+                }
+                }
+                if(showEditDeleteIcons){
+                    Box (modifier = Modifier.width(60.sdp)) {
+                        ResourceImage(
+                            image = R.drawable.ic_edit_small,
+                            modifier = Modifier.align(alignment = Alignment.TopStart).safeClickable {
+                                onEditClick()
+                            }.size(23.sdp)
+                                .padding(2.sdp)
+                        )
+
+                        ResourceImage(
+                            image = R.drawable.ic_delete_small,
+                            modifier = Modifier.align(alignment = Alignment.TopEnd).safeClickable {
+                                onDeleteClick()
+                            }.size(23.sdp)
+                                .padding(2.sdp)
+                        )
+                    }
                 }
             }
 

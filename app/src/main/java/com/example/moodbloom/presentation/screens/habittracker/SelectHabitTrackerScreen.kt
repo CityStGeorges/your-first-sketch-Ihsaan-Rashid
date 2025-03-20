@@ -40,7 +40,7 @@ fun SelectHabitTrackerRoute(
     val context = LocalContext.current
     SelectHabitTrackerScreen(onHabitTrackerSelect={
         mainViewModel.selectedHabitTracker=it
-        onNavigate(ScreensRoute.CustomHabitTracker.route)
+        onNavigate(ScreensRoute.SetUpHabitTracker.route)
     } ,onBackClick = onBackClick)
 }
 

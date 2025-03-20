@@ -1,6 +1,7 @@
 package com.example.moodbloom
 
 import androidx.lifecycle.ViewModel
+import com.example.moodbloom.domain.models.ConfigurationModel
 import com.example.moodbloom.domain.models.ExerciseModel
 import com.example.moodbloom.domain.models.HabitTrackerModel
 import com.google.firebase.auth.FirebaseUser
@@ -18,6 +19,7 @@ class MainViewModel @Inject constructor(
     var selectedExercise :ExerciseModel?=null
 
     var firebaseUser:FirebaseUser? = null
+    var configurationModel: ConfigurationModel = ConfigurationModel()
 
 
     fun logout(){

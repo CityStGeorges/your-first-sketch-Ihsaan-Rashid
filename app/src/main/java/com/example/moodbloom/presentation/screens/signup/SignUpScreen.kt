@@ -122,7 +122,6 @@ internal fun SignUpScreen(
                 singleLine = true,
                 placeholder = "Enter your password",
                 label = "Password",
-                inputType = InputType.IsLetterOrDigit
             )
             SpacerWeight(1f)
             TextButton(

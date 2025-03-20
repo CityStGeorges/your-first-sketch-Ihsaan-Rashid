@@ -2,7 +2,7 @@ package com.example.moodbloom.presentation.screens.forget
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.moodbloom.domain.usecases.SendPasswordResetEmailUseCase
+import com.example.moodbloom.domain.usecases.auth.SendPasswordResetEmailUseCase
 import com.example.moodbloom.extension.ResponseStates
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +21,7 @@ class ForgetViewModel @Inject constructor(
 
     fun sendPasswordResetEmail(request: String) {
         viewModelScope.launch {
+            _resetEmail.value = ResponseStates.Loading
             _resetEmail.value = useCase.invoke(request)
         }
     }

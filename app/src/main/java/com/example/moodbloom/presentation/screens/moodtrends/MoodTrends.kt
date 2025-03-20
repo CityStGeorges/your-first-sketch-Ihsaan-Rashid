@@ -1,6 +1,5 @@
 package com.example.moodbloom.presentation.screens.moodtrends
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -48,11 +47,15 @@ import co.yml.charts.ui.linechart.model.SelectionHighlightPopUp
 import co.yml.charts.ui.linechart.model.ShadowUnderLine
 import com.example.moodbloom.MainViewModel
 import com.example.moodbloom.R
-import com.example.moodbloom.domain.models.DateModel
+import com.example.moodbloom.domain.models.ChartDataModel
+import com.example.moodbloom.domain.models.LogMoodsResponseModel
+import com.example.moodbloom.extension.ChartType
+import com.example.moodbloom.extension.ResponseStates
 import com.example.moodbloom.extension.SpacerHeight
 import com.example.moodbloom.extension.SpacerWidth
 import com.example.moodbloom.presentation.components.BaseButton
 import com.example.moodbloom.presentation.components.CardContainer
+import com.example.moodbloom.presentation.components.HandleApiStates
 import com.example.moodbloom.presentation.components.PromptsViewModel
 import com.example.moodbloom.presentation.components.ResourceImage
 import com.example.moodbloom.presentation.components.ScreenContainer
@@ -61,8 +64,6 @@ import com.example.moodbloom.presentation.components.hpr
 import com.example.moodbloom.presentation.components.sdp
 import com.example.moodbloom.ui.typo.BodySmallText
 import com.example.moodbloom.ui.typo.TitleLargeText
-import com.example.moodbloom.ui.typo.TitleMediumText
-import com.example.moodbloom.ui.typo.TitleSmallText
 
 @Composable
 fun MoodTrendsScreenRoute(
@@ -72,14 +73,21 @@ fun MoodTrendsScreenRoute(
     viewModel: MoodsTrendsViewModel = hiltViewModel()
 ) {
     val chartData by viewModel.chartData.collectAsStateWithLifecycle()
+    val generateMoodsInsightsState by viewModel.generateMoodsInsightsState.collectAsStateWithLifecycle()
+    val listLogMoodState by viewModel.listLogMoodState.collectAsStateWithLifecycle()
     MoodTrendsScreen(
         onNavigate = onNavigate,
-        onBackClick = onBackClick,
-        getLastDates = viewModel::getLastDates,
+        generateMoodsInsightsState=generateMoodsInsightsState,
+        listLogMoodState=listLogMoodState,
+        onBackClick = {
+            viewModel.clearLogMoodState()
+            onBackClick()
+        },
+        getLastDates = viewModel::getChartData,
         chartData = chartData
     )
     LaunchedEffect(Unit) {
-        viewModel.getLastDates("Daily")
+        viewModel.getUserAllMoodLogList(userId=mainViewModel.firebaseUser?.uid?:"")
     }
 }
 
@@ -87,12 +95,14 @@ fun MoodTrendsScreenRoute(
 internal fun MoodTrendsScreen(
     promptsViewModel: PromptsViewModel = hiltViewModel(),
     onNavigate: (String) -> Unit = {},
-    chartData: List<DateModel> = listOf(),
-    getLastDates: (String) -> Unit = { _ -> },
+    listLogMoodState: ResponseStates<List<LogMoodsResponseModel>> = ResponseStates.Idle,
+    generateMoodsInsightsState: ResponseStates<String> = ResponseStates.Idle,
+    chartData: List<ChartDataModel> = listOf(),
+    getLastDates: (ChartType) -> Unit = { _ -> },
 
     onBackClick: () -> Unit
 ) {
-    var habitInsights by remember { mutableStateOf("This is the testing Insights Text djfk  ksjdfj koj dsfk kjdsf aksejf mnf urmds the  sdjfh sdfjhuydsa fjsdf lkjds fsdnsdmf djfh") }
+    var habitInsights by remember { mutableStateOf("") }
     val currentPrompt by promptsViewModel.currentPrompt.collectAsStateWithLifecycle()
     val configuration = LocalConfiguration.current
     val screenWidthDp = configuration.screenWidthDp.dp
@@ -108,9 +118,9 @@ internal fun MoodTrendsScreen(
     )
 
     val chartTimeOption = listOf(
-        "Daily", "Weekly", "Monthly"
+        ChartType.DAILY,ChartType.WEEKLY, ChartType.MONTHLY
     )
-    var dataShowOption by remember { mutableStateOf("Daily") }
+    var dataShowOption by remember { mutableStateOf(ChartType.DAILY) }
 
 
     // Function to get labels dynamically
@@ -240,7 +250,7 @@ internal fun MoodTrendsScreen(
                                 content = {
                                     Text(
                                         modifier = Modifier,
-                                        text = item, style = MaterialTheme.typography.labelSmall
+                                        text = item.value, style = MaterialTheme.typography.labelSmall
                                     )
                                 },
                                 onClick = {
@@ -271,6 +281,21 @@ internal fun MoodTrendsScreen(
                 BodySmallText(text =habitInsights, modifier = Modifier.fillMaxWidth().heightIn(min = 200.sdp),)
             }
         }
+        }
+    }
+
+    HandleApiStates(
+        state = listLogMoodState, updatePrompt = promptsViewModel::updatePrompt
+    ) { it ->
+        LaunchedEffect(Unit) {
+
+        }
+    }
+    HandleApiStates(
+        state = generateMoodsInsightsState, updatePrompt = promptsViewModel::updatePrompt
+    ) { it ->
+        LaunchedEffect(Unit) {
+            habitInsights = it
         }
     }
 }

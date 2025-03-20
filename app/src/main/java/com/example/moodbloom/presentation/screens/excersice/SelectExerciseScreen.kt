@@ -16,17 +16,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.example.moodbloom.MainViewModel
 import com.example.moodbloom.R
+import com.example.moodbloom.domain.models.ConfigurationModel
 import com.example.moodbloom.domain.models.ExerciseModel
+import com.example.moodbloom.extension.ResponseStates
 import com.example.moodbloom.extension.SpacerHeight
 import com.example.moodbloom.extension.SpacerWeight
 import com.example.moodbloom.extension.SpacerWidth
+import com.example.moodbloom.extension.showToast
 import com.example.moodbloom.presentation.components.CardContainer
 import com.example.moodbloom.presentation.components.DropdownSelectionField
+import com.example.moodbloom.presentation.components.HandleApiStates
 import com.example.moodbloom.presentation.components.PromptsViewModel
 import com.example.moodbloom.presentation.components.ResourceImage
 import com.example.moodbloom.presentation.components.ScreenContainer
@@ -35,6 +40,7 @@ import com.example.moodbloom.presentation.components.TopAppBar
 import com.example.moodbloom.presentation.components.hpr
 import com.example.moodbloom.presentation.components.sdp
 import com.example.moodbloom.presentation.screens.home.ItemSwitcher
+import com.example.moodbloom.presentation.screens.home.viewModel.ConfigurationViewModel
 import com.example.moodbloom.routes.ScreensRoute
 import com.example.moodbloom.ui.typo.BodyLargeText
 import com.example.moodbloom.ui.typo.TitleSmallText
@@ -44,14 +50,19 @@ fun SelectExerciseRoute(
     onNavigate: (String) -> Unit,
     onBackClick: () -> Unit,
     mainViewModel: MainViewModel,
+    configurationViewModel: ConfigurationViewModel = hiltViewModel(),
     viewModel: ExerciseViewModel = hiltViewModel()
 ) {
     val exerciseList by viewModel.listExercise.collectAsStateWithLifecycle()
+    val adOrUpdateConfigState by configurationViewModel.adOrUpdateConfigState.collectAsStateWithLifecycle()
+
     LaunchedEffect(Unit) {
         viewModel.getExerciseList()
     }
     SelectExerciseScreen(
         listExercise=exerciseList,
+        adOrUpdateConfigState=adOrUpdateConfigState,
+        configurationModel=mainViewModel.configurationModel,
         onExerciseSelect = {
             mainViewModel.selectedExercise = it
             onNavigate(ScreensRoute.Exercise.route)
@@ -65,14 +76,18 @@ internal fun SelectExerciseScreen(
     promptsViewModel: PromptsViewModel = hiltViewModel(),
     listExercise:List<ExerciseModel> = listOf(),
     onExerciseSelect: (ExerciseModel) -> Unit,
+    configurationModel: ConfigurationModel = ConfigurationModel(),
+    updateConfiguration: (Boolean,Boolean) -> Unit = {_,_->},
+    adOrUpdateConfigState: ResponseStates<String> = ResponseStates.Idle,
+    updateConfigInMain: (ConfigurationModel) -> Unit = {},
     onBackClick: () -> Unit
 ) {
 
     val currentPrompt by promptsViewModel.currentPrompt.collectAsStateWithLifecycle()
-
+    val context = LocalContext.current
     var selectedExerciseType: ExerciseModel? by remember { mutableStateOf(listExercise.takeIf {!it.isNullOrEmpty() }?.first()) }
-    var isRelaxingSoundEnable by remember { mutableStateOf(selectedExerciseType?.relaxingSound?:true) }
-    var isVoiceGuidanceEnable by remember { mutableStateOf(selectedExerciseType?.relaxingSound?:true) }
+    var isRelaxingSoundEnable by remember { mutableStateOf(configurationModel.isEnableRelaxingSound) }
+    var isVoiceGuidanceEnable by remember { mutableStateOf(configurationModel.isEnableVoiceGuidance) }
     var totalMinutes by remember { mutableStateOf(selectedExerciseType?.timerMinutes?:3) }
     ScreenContainer(currentPrompt = currentPrompt) {
         Column(
@@ -152,6 +167,7 @@ internal fun SelectExerciseScreen(
                 onCheckedChange = {
                     if (it != isRelaxingSoundEnable) {
                         isRelaxingSoundEnable = it
+                        updateConfiguration(isRelaxingSoundEnable,isVoiceGuidanceEnable)
                     }
                 })
 
@@ -163,6 +179,7 @@ internal fun SelectExerciseScreen(
                 onCheckedChange = {
                     if (it != isVoiceGuidanceEnable) {
                         isVoiceGuidanceEnable = it
+                        updateConfiguration(isRelaxingSoundEnable,isVoiceGuidanceEnable)
                     }
                 })
 
@@ -179,4 +196,21 @@ internal fun SelectExerciseScreen(
             SpacerHeight(5.hpr)
         }
     }
+
+    HandleApiStates(
+        state = adOrUpdateConfigState,
+        updatePrompt = promptsViewModel::updatePrompt,
+        onFailure = {
+            LaunchedEffect(Unit) {
+                isRelaxingSoundEnable = !isRelaxingSoundEnable
+                isVoiceGuidanceEnable = !isVoiceGuidanceEnable
+                context.showToast(it)
+            }
+        },
+        onSuccess = {
+            LaunchedEffect(Unit) {
+                updateConfigInMain(configurationModel.copy(isEnableRelaxingSound = isRelaxingSoundEnable, isEnableVoiceGuidance = isVoiceGuidanceEnable))
+            }
+        }
+    )
 }
