@@ -8,14 +8,14 @@ import com.example.moodbloom.extension.ResponseStates
 import javax.inject.Inject
 
 class GenerateInsightsUseCase @Inject constructor(private val repo: AiRepo) {
-    suspend fun invoke(habits: List<HabitTrackerModel>,
+    suspend fun invoke(userName:String,habits: List<HabitTrackerModel>,
                        moods: List<ChartDataModel>): ResponseStates<String> {
-        return repo.generateInsights(habits,moods)
+        return repo.generateInsights(userName=userName,habits,moods)
     }
 }
 
 class GenerateMoodsInsightsUseCase @Inject constructor(private val repo: AiRepo) {
-    suspend fun invoke(moods: List<ChartDataModel>): ResponseStates<String> {
-        return repo.generateMoodsInsights(moods)
+    suspend fun invoke(userName:String,lastDays:String,moods: List<ChartDataModel>): ResponseStates<String> {
+        return repo.generateMoodsInsights(userName=userName,lastDays=lastDays,moods=moods)
     }
 }

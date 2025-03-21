@@ -10,7 +10,8 @@ import com.example.moodbloom.extension.ResponseStates
 import com.google.firebase.auth.FirebaseUser
 
 interface AiRepo {
-     suspend fun generateInsights(habits: List<HabitTrackerModel>,
+     suspend fun generateInsights( userName:String,habits: List<HabitTrackerModel>,
                                   moods: List<ChartDataModel>):ResponseStates<String>
-     suspend fun generateMoodsInsights(moods: List<ChartDataModel>):ResponseStates<String>
+     suspend fun generateMoodsInsights( userName:String,
+                                        lastDays:String, moods: List<ChartDataModel>):ResponseStates<String>
 }

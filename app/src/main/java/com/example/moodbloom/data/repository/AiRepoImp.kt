@@ -23,28 +23,34 @@ class AiRepoImp @Inject constructor(
     private val apiService: OpenAIApiService
 ) : AiRepo {
     override suspend fun generateInsights(
+        userName:String,
         habits: List<HabitTrackerModel>,
         moods: List<ChartDataModel>
     ): ResponseStates<String> {
         return try {
             if (context.isNetworkAvailable()) {
-                val prompt =
-                    "Analyze the following user habits and moods, and provide insightful observations: " +
-                            "\nHabits: ${habits.joinToString()}" +
-                            "\nMoods: ${moods.joinToString()}" +
-                            "\nWhat trends do you observe? What recommendations can you give?"
+                val prompt = """
+    My name is $userName. I have been tracking my habits and moods.  
+    Below is my recorded data:
+    
+    - **Habits:** ${habits.joinToString()}  
+    - **Moods:** ${moods.joinToString()}  
 
-                val request = OpenAIRequest(
-                    messages = listOf(mapOf("role" to "user", "content" to prompt))
+    Please analyze my habits and mood patterns to provide insightful observations.  
+    - What trends or correlations do you notice?  
+    - Are there any patterns in how my habits affect my moods?  
+    - What recommendations can you give to improve my well-being?  
+""".trimIndent()
+
+                val request = GeminiRequest(
+                    contents = listOf(Content(parts = listOf(Part(text = prompt))))
                 )
 
                 return try {
-                    val response = apiService.getInsights(request)
-                    response.choices.firstOrNull()?.message?.get("content")
-                        ?: "No insights generated."
+                    val response = apiService.generateContent(NetworkModule.GEMINI_API_KEY, request)
+                    response.candidates?.firstOrNull()?.content?.parts?.firstOrNull()?.text ?: "No response"
                     ResponseStates.Success(
-                        200, response.choices.firstOrNull()?.message?.get("content")
-                            ?: "No insights generated."
+                        200, response.candidates?.firstOrNull()?.content?.parts?.firstOrNull()?.text ?: "No response"
                     )
                 } catch (e: Exception) {
                     "Error generating insights: ${e.message}"
@@ -70,28 +76,33 @@ class AiRepoImp @Inject constructor(
 
 
     override suspend fun generateMoodsInsights(
+        userName:String,
+        lastDays:String,
         moods: List<ChartDataModel>
     ): ResponseStates<String> {
         return try {
             if (context.isNetworkAvailable()) {
-                val prompt =
-                    "Analyze the following user moods and provide insightful observations: " +
+                /*val prompt =
+                    "My Name is ${userName} Analyze my moods List of Last ${lastDays} and provide insightful observations: " +
                             "\nMoods: ${moods.joinToString()}" +
-                            "\nWhat trends do you observe? What recommendations can you give?"
-
-               /* val request = OpenAIRequest(
-                    messages = listOf(mapOf("role" to "user", "content" to prompt))
-                )*/
-
+                            "\nWhat type of mood you observe? What recommendations can you give?"*/
+                val prompt = """
+    My name is $userName. I have been tracking my moods for the last $lastDays days. 
+    Below is a list of my recorded moods:
+    
+    Moods: ${moods.joinToString()}
+    
+    Please analyze my mood patterns and provide insightful observations. 
+    - What general mood trends do you observe?  
+    - Are there any recurring patterns or shifts?  
+    - What possible reasons might be influencing my moods?  
+    - What actionable recommendations can you give to improve my emotional well-being?  
+""".trimIndent()
                 val request = GeminiRequest(
                     contents = listOf(Content(parts = listOf(Part(text = prompt))))
                 )
 
                 return try {
-                  /*  val response = apiService.getInsights(request)
-                    response.choices.firstOrNull()?.message?.get("content")
-                        ?: "No insights generated."*/
-
                     val response = apiService.generateContent(NetworkModule.GEMINI_API_KEY, request)
                     response.candidates?.firstOrNull()?.content?.parts?.firstOrNull()?.text ?: "No response"
                     ResponseStates.Success(

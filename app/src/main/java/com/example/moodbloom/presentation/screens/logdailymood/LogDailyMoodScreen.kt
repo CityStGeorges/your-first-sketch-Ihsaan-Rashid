@@ -173,7 +173,7 @@ fun getMoodsList(): List<MoodType> {
     return listOf(
        MoodType.VHAPPY,
        MoodType.HAPPY,
-       MoodType.NATURAL,
+       MoodType.NORMAL,
        MoodType.UNCERTAIN,
        MoodType.SAD,
        MoodType.VSAD,

@@ -1,12 +1,13 @@
-package com.example.moodbloom.presentation.screens.moodtrends
+package com.example.moodbloom.presentation.screens.insights
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moodbloom.domain.models.ChartDataModel
+import com.example.moodbloom.domain.models.HabitTrackerModel
 import com.example.moodbloom.domain.models.LogMoodsResponseModel
+import com.example.moodbloom.domain.usecases.habit.GetUserAllHabitsListUseCase
 import com.example.moodbloom.domain.usecases.moodlog.GetUserAllMoodLogListUseCase
 import com.example.moodbloom.domain.usecases.openai.GenerateInsightsUseCase
-import com.example.moodbloom.domain.usecases.openai.GenerateMoodsInsightsUseCase
 import com.example.moodbloom.extension.ChartType
 import com.example.moodbloom.extension.MoodType
 import com.example.moodbloom.extension.ResponseStates
@@ -27,9 +28,9 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class MoodsTrendsViewModel @Inject constructor(
+class InsightsViewModel @Inject constructor(
     private val getUserAllMoodLogListUseCase: GetUserAllMoodLogListUseCase,
-    private val generateMoodsInsightsUseCase: GenerateMoodsInsightsUseCase,
+    private val getUserAllHabitsListUseCase: GetUserAllHabitsListUseCase,
     private val generateInsightsUseCase: GenerateInsightsUseCase,
 ) : ViewModel() {
 
@@ -46,20 +47,30 @@ class MoodsTrendsViewModel @Inject constructor(
             _listLogMoodState.value = ResponseStates.Loading
             _listLogMoodState.value = getUserAllMoodLogListUseCase.invoke(firebaseUser?.uid?:"").onSuccess {
                 listMoodComplete = it
-               getChartData(chartType = ChartType.DAILY,firebaseUser?.displayName?:"")
+               getChartData(chartType = ChartType.DAILY, userId = firebaseUser?.uid?:"", userName = firebaseUser?.displayName?:"")
             }
         }
     }
 
 
-    fun getChartData(chartType: ChartType,userName:String) {
+
+
+    fun getChartData(chartType: ChartType,userId:String,userName:String) {
         val today = LocalDate.now()
         _chartData.value =  when (chartType) {
             ChartType.DAILY -> getDailyData(listMoodComplete, today)
             ChartType.WEEKLY -> getWeeklyData(listMoodComplete, today)
             ChartType.MONTHLY -> getMonthlyData(listMoodComplete, today)
         }
-        generateMoodsInsights(userName,lastDays=chartType.value)
+        listHabit(userId = userId,userName=userName,chartType.value)
+    }
+
+    fun listHabit(userId: String, userName: String, chartType: String) {
+        viewModelScope.launch {
+            getUserAllHabitsListUseCase.invoke(userId).onSuccess {
+                generateMoodsInsights(userName,it)
+            }
+        }
     }
 
     private fun getDailyData(
@@ -163,11 +174,11 @@ class MoodsTrendsViewModel @Inject constructor(
         MutableStateFlow<ResponseStates<String>>(ResponseStates.Idle)
     val generateMoodsInsightsState: StateFlow<ResponseStates<String>> = _generateMoodsInsightsState
 
-    fun generateMoodsInsights(userName: String,lastDays:String) {
+    fun generateMoodsInsights(userName: String,listHabit:List<HabitTrackerModel>) {
         viewModelScope.launch {
             if (chartData.value.isNotEmpty()){
                 _generateMoodsInsightsState.value = ResponseStates.Loading
-                _generateMoodsInsightsState.value = generateMoodsInsightsUseCase.invoke(userName=userName,lastDays=lastDays,chartData.value)
+                _generateMoodsInsightsState.value = generateInsightsUseCase.invoke(userName=userName, habits = listHabit, moods = chartData.value)
             }
         }
     }

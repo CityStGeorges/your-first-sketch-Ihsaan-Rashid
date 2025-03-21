@@ -8,7 +8,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.moodbloom.MainViewModel
-import com.example.moodbloom.presentation.screens.InsightsScreenRoute
+import com.example.moodbloom.presentation.screens.insights.InsightsScreenRoute
 import com.example.moodbloom.presentation.screens.excersice.ExerciseRoute
 import com.example.moodbloom.presentation.screens.excersice.SelectExerciseRoute
 import com.example.moodbloom.presentation.screens.forget.ForgetPasswordScreenRoute

@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
@@ -62,6 +64,7 @@ import com.example.moodbloom.presentation.components.ScreenContainer
 import com.example.moodbloom.presentation.components.TopAppBar
 import com.example.moodbloom.presentation.components.hpr
 import com.example.moodbloom.presentation.components.sdp
+import com.example.moodbloom.ui.typo.BodyMediumText
 import com.example.moodbloom.ui.typo.BodySmallText
 import com.example.moodbloom.ui.typo.TitleLargeText
 
@@ -83,11 +86,11 @@ fun MoodTrendsScreenRoute(
             viewModel.clearLogMoodState()
             onBackClick()
         },
-        getLastDates = viewModel::getChartData,
+        getLastDates = {viewModel.getChartData(chartType = it, userName = mainViewModel.firebaseUser?.displayName?:"")},
         chartData = chartData
     )
     LaunchedEffect(Unit) {
-        viewModel.getUserAllMoodLogList(userId=mainViewModel.firebaseUser?.uid?:"")
+        viewModel.getUserAllMoodLogList(firebaseUser =mainViewModel.firebaseUser)
     }
 }
 
@@ -188,7 +191,6 @@ internal fun MoodTrendsScreen(
     ScreenContainer(currentPrompt = currentPrompt) {
         Column(
             modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TopAppBar(title = "Mood Trends") {
                 onBackClick()
@@ -271,16 +273,19 @@ internal fun MoodTrendsScreen(
             SpacerHeight(2.hpr)
             TitleLargeText(text = "Insights")
             SpacerHeight(1.hpr)
-            CardContainer{
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.sdp)
-            ) {
-                SpacerHeight(10.sdp)
-                BodySmallText(text =habitInsights, modifier = Modifier.fillMaxWidth().heightIn(min = 200.sdp),)
+            CardContainer {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 100.sdp, max = 200.sdp)
+                        .padding(10.sdp)
+                        .verticalScroll(rememberScrollState()) // Ensure this is placed at the end
+                ) {
+                    SpacerHeight(10.sdp)
+                    BodyMediumText(text = habitInsights, modifier = Modifier.fillMaxWidth())
+                }
             }
-        }
+
         }
     }
 
