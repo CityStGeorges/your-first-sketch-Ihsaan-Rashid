@@ -47,7 +47,7 @@ fun InsightsScreenRoute(
         onBackClick = onBackClick,
     )
     LaunchedEffect(Unit) {
-        viewModel.getUserAllMoodLogList(firebaseUser = mainViewModel.firebaseUser)
+        viewModel.getUserAllMoodLogList(firebaseUser = mainViewModel.userModel)
     }
 }
 

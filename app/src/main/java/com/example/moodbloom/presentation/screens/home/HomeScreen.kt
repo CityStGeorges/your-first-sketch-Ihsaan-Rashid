@@ -32,6 +32,7 @@ import com.example.moodbloom.data.preferences.DatastorePreferences
 import com.example.moodbloom.data.preferences.PreferenceKey
 import com.example.moodbloom.domain.models.ConfigurationModel
 import com.example.moodbloom.domain.models.HomeOptionsModel
+import com.example.moodbloom.domain.models.auth.UserModel
 import com.example.moodbloom.utils.extension.ResponseStates
 import com.example.moodbloom.utils.extension.SpacerHeight
 import com.example.moodbloom.utils.extension.SpacerWidth
@@ -74,7 +75,7 @@ fun HomeScreenRoute(
         adOrUpdateConfigState = adOrUpdateConfigState,
         configurationModel=mainViewModel.configurationModel,
         updateConfigInMain = {mainViewModel.configurationModel=it},
-        firebaseUser = mainViewModel.firebaseUser,
+        firebaseUser = mainViewModel.userModel,
         onLogOutCall = {
             mainViewModel.logout()
             mainViewModel.clearState()
@@ -94,7 +95,7 @@ fun HomeScreenRoute(
 @Composable
 internal fun HomeScreen(
     promptsViewModel: PromptsViewModel = hiltViewModel(),
-    firebaseUser: FirebaseUser? = null,
+    firebaseUser: UserModel? = null,
     getUserConfigState: ResponseStates<ConfigurationModel> = ResponseStates.Idle,
     configurationModel: ConfigurationModel = ConfigurationModel(),
     adOrUpdateConfigState: ResponseStates<String> = ResponseStates.Idle,
@@ -142,7 +143,7 @@ internal fun HomeScreen(
             ResourceImage(image = R.drawable.ic_logo, modifier = Modifier.height(12.hpr))
             SpacerHeight(2.hpr)
             HeadlineMediumText(
-                text = "Welcome ${firebaseUser?.displayName}!",
+                text = "Welcome ${firebaseUser?.fullName}!",
                 fontSize = 28.textSdp
             )
             SpacerHeight(2.hpr)

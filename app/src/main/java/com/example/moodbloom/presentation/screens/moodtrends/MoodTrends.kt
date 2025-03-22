@@ -85,11 +85,11 @@ fun MoodTrendsScreenRoute(
             viewModel.clearLogMoodState()
             onBackClick()
         },
-        getLastDates = {viewModel.getChartData(chartType = it, userName = mainViewModel.firebaseUser?.displayName?:"")},
+        getLastDates = {viewModel.getChartData(chartType = it, userName = mainViewModel.userModel?.fullName?:"")},
         chartData = chartData
     )
     LaunchedEffect(Unit) {
-        viewModel.getUserAllMoodLogList(firebaseUser =mainViewModel.firebaseUser)
+        viewModel.getUserAllMoodLogList(firebaseUser =mainViewModel.userModel)
     }
 }
 

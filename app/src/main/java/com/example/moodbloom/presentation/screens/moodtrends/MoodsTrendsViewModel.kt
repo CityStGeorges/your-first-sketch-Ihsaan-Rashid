@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moodbloom.domain.models.ChartDataModel
 import com.example.moodbloom.domain.models.LogMoodsResponseModel
+import com.example.moodbloom.domain.models.auth.UserModel
 import com.example.moodbloom.domain.usecases.moodlog.GetUserAllMoodLogListUseCase
 import com.example.moodbloom.domain.usecases.openai.GenerateInsightsUseCase
 import com.example.moodbloom.domain.usecases.openai.GenerateMoodsInsightsUseCase
@@ -41,12 +42,12 @@ class MoodsTrendsViewModel @Inject constructor(
     val listLogMoodState: StateFlow<ResponseStates<List<LogMoodsResponseModel>>> = _listLogMoodState
     private var listMoodComplete: List<LogMoodsResponseModel> = listOf()
 
-    fun getUserAllMoodLogList(firebaseUser: FirebaseUser?) {
+    fun getUserAllMoodLogList(firebaseUser: UserModel?) {
         viewModelScope.launch {
             _listLogMoodState.value = ResponseStates.Loading
             _listLogMoodState.value = getUserAllMoodLogListUseCase.invoke(firebaseUser?.uid?:"").onSuccess {
                 listMoodComplete = it
-               getChartData(chartType = ChartType.DAILY,firebaseUser?.displayName?:"")
+               getChartData(chartType = ChartType.DAILY,firebaseUser?.fullName?:"")
             }
         }
     }

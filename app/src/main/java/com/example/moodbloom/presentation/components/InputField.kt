@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -31,6 +32,7 @@ fun TextInputField(
     onValueChange: (String) -> Unit,
     placeholder: String = "",
     label: String = "",
+    visualTransformation: VisualTransformation =VisualTransformation.None,
     borderColor: Color = MaterialTheme.colorScheme.outline,
     textColor: Color = MaterialTheme.colorScheme.onBackground,
     inputType: InputType = InputType.Any,
@@ -62,6 +64,7 @@ fun TextInputField(
         singleLine = singleLine,
         enabled = enabled,
         readOnly = readOnly,
+        visualTransformation=visualTransformation,
         keyboardOptions = getKeyboardOptions(inputType),
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = borderColor,
