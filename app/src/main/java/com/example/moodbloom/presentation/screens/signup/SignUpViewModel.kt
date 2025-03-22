@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moodbloom.domain.models.auth.RegisterUserRequestModel
 import com.example.moodbloom.domain.usecases.auth.RegisterUseCase
-import com.example.moodbloom.extension.ResponseStates
+import com.example.moodbloom.utils.extension.ResponseStates
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

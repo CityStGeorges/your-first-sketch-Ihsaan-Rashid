@@ -24,7 +24,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import com.example.moodbloom.R
-import com.example.moodbloom.extension.SpacerWidth
+import com.example.moodbloom.utils.extension.SpacerWidth
 import com.example.moodbloom.ui.theme.md_theme_light_disable
 import com.example.moodbloom.ui.typo.BodyLargeText
 

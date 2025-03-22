@@ -17,7 +17,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TimePicker
-import androidx.compose.material3.TimePickerColors
 import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberTimePickerState
@@ -33,14 +32,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.moodbloom.MainViewModel
+import com.example.moodbloom.presentation.MainViewModel
 import com.example.moodbloom.R
 import com.example.moodbloom.data.DataHelper.getDaysList
 import com.example.moodbloom.domain.models.HabitTrackerModel
-import com.example.moodbloom.extension.ResponseStates
-import com.example.moodbloom.extension.SpacerHeight
-import com.example.moodbloom.extension.SpacerWeight
-import com.example.moodbloom.extension.SpacerWidth
+import com.example.moodbloom.utils.extension.ResponseStates
+import com.example.moodbloom.utils.extension.SpacerHeight
+import com.example.moodbloom.utils.extension.SpacerWeight
+import com.example.moodbloom.utils.extension.SpacerWidth
 import com.example.moodbloom.presentation.components.CardContainer
 import com.example.moodbloom.presentation.components.HandleApiStates
 import com.example.moodbloom.presentation.components.InputType

@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.moodbloom.domain.models.ConfigurationModel
 import com.example.moodbloom.domain.usecases.config.AdOrUpdateConfigUseCase
 import com.example.moodbloom.domain.usecases.config.GetUserConfigUseCase
-import com.example.moodbloom.extension.ResponseStates
+import com.example.moodbloom.utils.extension.ResponseStates
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

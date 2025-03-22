@@ -8,10 +8,10 @@ import com.example.moodbloom.domain.models.LogMoodsResponseModel
 import com.example.moodbloom.domain.usecases.habit.GetUserAllHabitsListUseCase
 import com.example.moodbloom.domain.usecases.moodlog.GetUserAllMoodLogListUseCase
 import com.example.moodbloom.domain.usecases.openai.GenerateInsightsUseCase
-import com.example.moodbloom.extension.ChartType
-import com.example.moodbloom.extension.MoodType
-import com.example.moodbloom.extension.ResponseStates
-import com.example.moodbloom.extension.onSuccess
+import com.example.moodbloom.utils.extension.ChartType
+import com.example.moodbloom.utils.extension.MoodType
+import com.example.moodbloom.utils.extension.ResponseStates
+import com.example.moodbloom.utils.extension.onSuccess
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,7 +55,7 @@ class InsightsViewModel @Inject constructor(
 
 
 
-    fun getChartData(chartType: ChartType,userId:String,userName:String) {
+    fun getChartData(chartType: ChartType, userId:String, userName:String) {
         val today = LocalDate.now()
         _chartData.value =  when (chartType) {
             ChartType.DAILY -> getDailyData(listMoodComplete, today)

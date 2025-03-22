@@ -7,9 +7,9 @@ import com.example.moodbloom.domain.usecases.habit.DeleteHabitUseCase
 import com.example.moodbloom.domain.usecases.habit.GetUserAllHabitsListUseCase
 import com.example.moodbloom.domain.usecases.habit.InsertHabitUseCase
 import com.example.moodbloom.domain.usecases.habit.UpdateHabitUseCase
-import com.example.moodbloom.extension.ResponseStates
-import com.example.moodbloom.extension.onSuccess
-import com.example.moodbloom.reminders.HabitReminderScheduler
+import com.example.moodbloom.utils.extension.ResponseStates
+import com.example.moodbloom.utils.extension.onSuccess
+import com.example.moodbloom.utils.reminders.HabitReminderScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -58,7 +58,8 @@ class HabitTrackerViewModel @Inject constructor(
     }
 
 
-    private val _listHabitState = MutableStateFlow<ResponseStates<List<HabitTrackerModel>>>(ResponseStates.Idle)
+    private val _listHabitState = MutableStateFlow<ResponseStates<List<HabitTrackerModel>>>(
+        ResponseStates.Idle)
     val listHabitState: StateFlow<ResponseStates<List<HabitTrackerModel>>> = _listHabitState
 
     fun listHabit(userId: String) {

@@ -30,13 +30,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.example.moodbloom.R
-import com.example.moodbloom.extension.SpacerHeight
-import com.example.moodbloom.extension.SpacerWeight
+import com.example.moodbloom.utils.extension.SpacerHeight
+import com.example.moodbloom.utils.extension.SpacerWeight
 import com.example.moodbloom.presentation.components.PromptsViewModel
 import com.example.moodbloom.presentation.components.ResourceImage
 import com.example.moodbloom.presentation.components.ScreenContainer
 import com.example.moodbloom.presentation.components.sdp
-import com.example.moodbloom.routes.ScreensRoute
+import com.example.moodbloom.presentation.routes.ScreensRoute
 import com.example.moodbloom.ui.theme.AppTheme
 
 @Composable

@@ -34,7 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.moodbloom.R
-import com.example.moodbloom.extension.SpacerWidth
+import com.example.moodbloom.utils.extension.SpacerWidth
 import com.example.moodbloom.ui.theme.AppTheme
 import com.example.moodbloom.ui.theme.md_theme_light_disable
 import com.example.moodbloom.ui.theme.md_theme_light_disable_outline

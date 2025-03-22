@@ -5,7 +5,7 @@ import com.example.moodbloom.domain.models.LogMoodsRequest
 import com.example.moodbloom.domain.models.LogMoodsResponseModel
 import com.example.moodbloom.domain.repository.ConfigurationRepo
 import com.example.moodbloom.domain.repository.MoodLogsRepo
-import com.example.moodbloom.extension.ResponseStates
+import com.example.moodbloom.utils.extension.ResponseStates
 import javax.inject.Inject
 
 class AdOrUpdateConfigUseCase @Inject constructor(private val repo: ConfigurationRepo) {

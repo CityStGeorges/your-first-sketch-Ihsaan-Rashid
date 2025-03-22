@@ -22,13 +22,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.example.moodbloom.MainViewModel
+import com.example.moodbloom.presentation.MainViewModel
 import com.example.moodbloom.R
 import com.example.moodbloom.domain.models.LogMoodsRequest
-import com.example.moodbloom.extension.MoodType
-import com.example.moodbloom.extension.ResponseStates
-import com.example.moodbloom.extension.SpacerHeight
-import com.example.moodbloom.extension.SpacerWeight
+import com.example.moodbloom.utils.extension.MoodType
+import com.example.moodbloom.utils.extension.ResponseStates
+import com.example.moodbloom.utils.extension.SpacerHeight
+import com.example.moodbloom.utils.extension.SpacerWeight
 import com.example.moodbloom.presentation.components.HandleApiStates
 import com.example.moodbloom.presentation.components.PromptTypeShow
 import com.example.moodbloom.presentation.components.PromptsViewModel
@@ -39,7 +39,7 @@ import com.example.moodbloom.presentation.components.TextInputField
 import com.example.moodbloom.presentation.components.TopAppBar
 import com.example.moodbloom.presentation.components.hpr
 import com.example.moodbloom.presentation.components.sdp
-import com.example.moodbloom.routes.ScreensRoute
+import com.example.moodbloom.presentation.routes.ScreensRoute
 import com.example.moodbloom.ui.typo.HeadlineMediumText
 
 @Composable

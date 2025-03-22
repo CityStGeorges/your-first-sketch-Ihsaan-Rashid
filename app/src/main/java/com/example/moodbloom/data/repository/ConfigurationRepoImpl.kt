@@ -5,8 +5,8 @@ import android.util.Log
 import com.example.moodbloom.R
 import com.example.moodbloom.domain.models.ConfigurationModel
 import com.example.moodbloom.domain.repository.ConfigurationRepo
-import com.example.moodbloom.extension.ResponseStates
-import com.example.moodbloom.extension.isNetworkAvailable
+import com.example.moodbloom.utils.extension.ResponseStates
+import com.example.moodbloom.utils.extension.isNetworkAvailable
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot

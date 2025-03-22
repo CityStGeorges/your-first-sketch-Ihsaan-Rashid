@@ -42,7 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.moodbloom.R
-import com.example.moodbloom.extension.SpacerWidth
+import com.example.moodbloom.utils.extension.SpacerWidth
 import com.example.moodbloom.ui.theme.AppTheme
 import com.example.moodbloom.ui.typo.LabelLargeText
 import kotlinx.coroutines.CoroutineScope

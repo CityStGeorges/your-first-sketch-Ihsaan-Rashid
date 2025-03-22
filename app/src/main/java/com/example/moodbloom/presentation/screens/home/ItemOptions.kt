@@ -17,8 +17,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.moodbloom.R
 import com.example.moodbloom.domain.models.HomeOptionsModel
-import com.example.moodbloom.extension.SpacerWeight
-import com.example.moodbloom.extension.SpacerWidth
+import com.example.moodbloom.utils.extension.SpacerWeight
+import com.example.moodbloom.utils.extension.SpacerWidth
 import com.example.moodbloom.presentation.components.ResourceImage
 import com.example.moodbloom.presentation.components.sdp
 import com.example.moodbloom.ui.typo.TitleSmallText

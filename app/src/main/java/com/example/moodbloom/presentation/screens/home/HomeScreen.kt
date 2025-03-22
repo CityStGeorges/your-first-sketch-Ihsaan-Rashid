@@ -26,16 +26,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.example.moodbloom.MainViewModel
+import com.example.moodbloom.presentation.MainViewModel
 import com.example.moodbloom.R
 import com.example.moodbloom.data.preferences.DatastorePreferences
 import com.example.moodbloom.data.preferences.PreferenceKey
 import com.example.moodbloom.domain.models.ConfigurationModel
 import com.example.moodbloom.domain.models.HomeOptionsModel
-import com.example.moodbloom.extension.ResponseStates
-import com.example.moodbloom.extension.SpacerHeight
-import com.example.moodbloom.extension.SpacerWidth
-import com.example.moodbloom.extension.showToast
+import com.example.moodbloom.utils.extension.ResponseStates
+import com.example.moodbloom.utils.extension.SpacerHeight
+import com.example.moodbloom.utils.extension.SpacerWidth
+import com.example.moodbloom.utils.extension.showToast
 import com.example.moodbloom.presentation.components.HandleApiStates
 import com.example.moodbloom.presentation.components.LogoutButton
 import com.example.moodbloom.presentation.components.PromptTypeShow
@@ -48,7 +48,7 @@ import com.example.moodbloom.presentation.components.sdp
 import com.example.moodbloom.presentation.components.textSdp
 import com.example.moodbloom.presentation.screens.home.viewModel.ConfigurationViewModel
 import com.example.moodbloom.presentation.screens.home.viewModel.HomeViewModel
-import com.example.moodbloom.routes.ScreensRoute
+import com.example.moodbloom.presentation.routes.ScreensRoute
 import com.example.moodbloom.ui.typo.HeadlineMediumText
 import com.google.firebase.auth.FirebaseUser
 

@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.example.moodbloom.R
-import com.example.moodbloom.extension.MoodType
+import com.example.moodbloom.utils.extension.MoodType
 import com.example.moodbloom.presentation.components.ResourceImage
 import com.example.moodbloom.presentation.components.safeClickable
 import com.example.moodbloom.presentation.components.sdp
@@ -19,7 +19,7 @@ import com.example.moodbloom.ui.typo.BodyMediumText
 
 @Composable
 fun BoxScope.ItemMoodEmoji(
-    item:  MoodType,
+    item: MoodType,
     selectedMoodItem: MoodType?,
     onItemClick: (MoodType) -> Unit
 ) {

@@ -47,14 +47,14 @@ import co.yml.charts.ui.linechart.model.LineStyle
 import co.yml.charts.ui.linechart.model.SelectionHighlightPoint
 import co.yml.charts.ui.linechart.model.SelectionHighlightPopUp
 import co.yml.charts.ui.linechart.model.ShadowUnderLine
-import com.example.moodbloom.MainViewModel
+import com.example.moodbloom.presentation.MainViewModel
 import com.example.moodbloom.R
 import com.example.moodbloom.domain.models.ChartDataModel
 import com.example.moodbloom.domain.models.LogMoodsResponseModel
-import com.example.moodbloom.extension.ChartType
-import com.example.moodbloom.extension.ResponseStates
-import com.example.moodbloom.extension.SpacerHeight
-import com.example.moodbloom.extension.SpacerWidth
+import com.example.moodbloom.utils.extension.ChartType
+import com.example.moodbloom.utils.extension.ResponseStates
+import com.example.moodbloom.utils.extension.SpacerHeight
+import com.example.moodbloom.utils.extension.SpacerWidth
 import com.example.moodbloom.presentation.components.BaseButton
 import com.example.moodbloom.presentation.components.CardContainer
 import com.example.moodbloom.presentation.components.HandleApiStates
@@ -65,7 +65,6 @@ import com.example.moodbloom.presentation.components.TopAppBar
 import com.example.moodbloom.presentation.components.hpr
 import com.example.moodbloom.presentation.components.sdp
 import com.example.moodbloom.ui.typo.BodyMediumText
-import com.example.moodbloom.ui.typo.BodySmallText
 import com.example.moodbloom.ui.typo.TitleLargeText
 
 @Composable
@@ -121,7 +120,7 @@ internal fun MoodTrendsScreen(
     )
 
     val chartTimeOption = listOf(
-        ChartType.DAILY,ChartType.WEEKLY, ChartType.MONTHLY
+        ChartType.DAILY, ChartType.WEEKLY, ChartType.MONTHLY
     )
     var dataShowOption by remember { mutableStateOf(ChartType.DAILY) }
 

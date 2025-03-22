@@ -1,7 +1,6 @@
 package com.example.moodbloom.presentation.screens.welcome
 
 import android.app.Activity
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
@@ -11,24 +10,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.credentials.Credential
-import androidx.credentials.CredentialManager
-import androidx.credentials.CustomCredential
-import androidx.credentials.GetCredentialRequest
-import androidx.credentials.exceptions.GetCredentialException
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.moodbloom.MainViewModel
+import com.example.moodbloom.presentation.MainViewModel
 import com.example.moodbloom.R
-import com.example.moodbloom.extension.ResponseStates
-import com.example.moodbloom.extension.SpacerHeight
-import com.example.moodbloom.extension.SpacerWeight
+import com.example.moodbloom.utils.extension.ResponseStates
+import com.example.moodbloom.utils.extension.SpacerHeight
+import com.example.moodbloom.utils.extension.SpacerWeight
 import com.example.moodbloom.presentation.components.HandleApiStates
 import com.example.moodbloom.presentation.components.LoginWithGoogleButton
 import com.example.moodbloom.presentation.components.PromptTypeShow
@@ -40,7 +32,7 @@ import com.example.moodbloom.presentation.components.hpr
 import com.example.moodbloom.presentation.components.safeClickable
 import com.example.moodbloom.presentation.components.sdp
 import com.example.moodbloom.presentation.components.textSdp
-import com.example.moodbloom.routes.ScreensRoute
+import com.example.moodbloom.presentation.routes.ScreensRoute
 import com.example.moodbloom.ui.typo.HeadlineMediumText
 import com.example.moodbloom.ui.typo.LabelMediumText
 import com.google.android.gms.auth.api.signin.GoogleSignIn

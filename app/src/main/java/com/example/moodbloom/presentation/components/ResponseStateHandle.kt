@@ -3,7 +3,7 @@ package com.example.moodbloom.presentation.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import com.example.moodbloom.extension.ResponseStates
+import com.example.moodbloom.utils.extension.ResponseStates
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser

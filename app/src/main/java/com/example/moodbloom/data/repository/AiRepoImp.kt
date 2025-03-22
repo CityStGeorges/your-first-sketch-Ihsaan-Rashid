@@ -12,8 +12,8 @@ import com.example.moodbloom.domain.models.ChartDataModel
 import com.example.moodbloom.domain.models.HabitTrackerModel
 import com.example.moodbloom.domain.models.LogMoodsResponseModel
 import com.example.moodbloom.domain.repository.AiRepo
-import com.example.moodbloom.extension.ResponseStates
-import com.example.moodbloom.extension.isNetworkAvailable
+import com.example.moodbloom.utils.extension.ResponseStates
+import com.example.moodbloom.utils.extension.isNetworkAvailable
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 

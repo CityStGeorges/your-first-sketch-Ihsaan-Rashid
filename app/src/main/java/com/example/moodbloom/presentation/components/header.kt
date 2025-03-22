@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.moodbloom.R
-import com.example.moodbloom.extension.SpacerHeight
+import com.example.moodbloom.utils.extension.SpacerHeight
 import com.example.moodbloom.ui.typo.TitleLargeText
 
 @Composable

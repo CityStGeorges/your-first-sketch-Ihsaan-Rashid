@@ -17,17 +17,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.moodbloom.MainViewModel
+import com.example.moodbloom.presentation.MainViewModel
 import com.example.moodbloom.data.DataHelper.getHabitsList
 import com.example.moodbloom.domain.models.HabitTrackerModel
-import com.example.moodbloom.extension.SpacerHeight
+import com.example.moodbloom.utils.extension.SpacerHeight
 import com.example.moodbloom.presentation.components.PromptsViewModel
 import com.example.moodbloom.presentation.components.ScreenContainer
 import com.example.moodbloom.presentation.components.TopAppBar
 import com.example.moodbloom.presentation.components.hpr
 import com.example.moodbloom.presentation.components.sdp
 import com.example.moodbloom.presentation.screens.habittracker.items.ItemHabit
-import com.example.moodbloom.routes.ScreensRoute
+import com.example.moodbloom.presentation.routes.ScreensRoute
 
 
 @Composable

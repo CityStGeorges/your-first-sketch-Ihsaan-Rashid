@@ -33,8 +33,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import com.example.moodbloom.R
 import com.example.moodbloom.domain.models.HabitTrackerModel
-import com.example.moodbloom.extension.SpacerWeight
-import com.example.moodbloom.extension.getDrawableResourceId
+import com.example.moodbloom.utils.extension.SpacerWeight
+import com.example.moodbloom.utils.extension.getDrawableResourceId
 import com.example.moodbloom.presentation.components.CardContainer
 import com.example.moodbloom.presentation.components.ResourceImage
 import com.example.moodbloom.presentation.components.safeClickable

@@ -2,7 +2,7 @@ package com.example.moodbloom.domain.usecases.habit
 
 import com.example.moodbloom.domain.models.HabitTrackerModel
 import com.example.moodbloom.domain.repository.HabitTrackerRepo
-import com.example.moodbloom.extension.ResponseStates
+import com.example.moodbloom.utils.extension.ResponseStates
 import javax.inject.Inject
 
 class InsertHabitUseCase @Inject constructor(private val repo: HabitTrackerRepo) {
