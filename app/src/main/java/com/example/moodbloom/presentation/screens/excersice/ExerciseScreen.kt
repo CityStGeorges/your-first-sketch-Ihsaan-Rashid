@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -124,12 +125,6 @@ internal fun ExerciseScreen(
     }
     val textToSpeechHelper = remember { TextToSpeechHelper(context){
         isTextToVoiceRunning = false
-        if (configurationModel.isEnableRelaxingSound) {
-            playSuccessTune(
-                context = context,
-                mediaPlayer = mediaPlayer
-            )
-        }
         startCountdown()
     } }
     ScreenContainer(currentPrompt = currentPrompt) {
@@ -191,8 +186,7 @@ internal fun ExerciseScreen(
             SpacerHeight(2.hpr)
             TitleMediumText(text = "How to Do It:")
             SpacerHeight(5.sdp)
-            CardContainer {
-
+            CardContainer(modifier = Modifier.fillMaxWidth().weight(1f)) {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -212,6 +206,7 @@ internal fun ExerciseScreen(
                                 overrideColor = md_theme_light_onSurface
                             )
                         }
+
                     }
                 }
             }
@@ -230,7 +225,7 @@ internal fun ExerciseScreen(
                     )
                 }
             }
-            SpacerHeight(5.hpr)
+            SpacerHeight(10.sdp)
             Row(modifier = Modifier.fillMaxWidth()) {
                 if (!isStarted && !isCompleted && !isTextToVoiceRunning) {
                     TextButton(
@@ -244,6 +239,12 @@ internal fun ExerciseScreen(
                                 textToSpeechHelper.speak(textToSpeak)
                             } else {
                                 startCountdown()
+                            }
+                            if (configurationModel.isEnableRelaxingSound) {
+                                playSuccessTune(
+                                    context = context,
+                                    mediaPlayer = mediaPlayer
+                                )
                             }
                         })
                 } else if (isCompleted && !isRunning && !isTextToVoiceRunning) {

@@ -19,6 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.moodbloom.presentation.MainViewModel
 import com.example.moodbloom.R
 import com.example.moodbloom.domain.models.auth.LoginRequestModel
+import com.example.moodbloom.domain.models.auth.UserModel
 import com.example.moodbloom.utils.extension.ResponseStates
 import com.example.moodbloom.utils.extension.SpacerHeight
 import com.example.moodbloom.utils.extension.SpacerWeight
@@ -48,7 +49,8 @@ fun LoginScreenRoute(
     val userState by viewModel.userState.collectAsStateWithLifecycle()
     LoginScreen(
         onLoginSuccess = {
-            mainViewModel.firebaseUser = it
+            mainViewModel.firebaseUser = it.firebaseUser
+            mainViewModel.userModel = it
             viewModel.clearState()
             onNavigate(ScreensRoute.Home.route)
         }, userState = userState,
@@ -59,9 +61,9 @@ fun LoginScreenRoute(
 @Composable
 internal fun LoginScreen(
     promptsViewModel: PromptsViewModel = hiltViewModel(),
-    userState: ResponseStates<FirebaseUser?> = ResponseStates.Idle,
+    userState: ResponseStates<UserModel?> = ResponseStates.Idle,
     onLoginRequest: (LoginRequestModel) -> Unit = {},
-    onLoginSuccess: (FirebaseUser) -> Unit
+    onLoginSuccess: (UserModel) -> Unit
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }

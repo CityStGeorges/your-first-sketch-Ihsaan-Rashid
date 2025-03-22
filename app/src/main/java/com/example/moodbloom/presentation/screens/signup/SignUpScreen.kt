@@ -20,6 +20,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.moodbloom.presentation.MainViewModel
 import com.example.moodbloom.R
 import com.example.moodbloom.domain.models.auth.RegisterUserRequestModel
+import com.example.moodbloom.domain.models.auth.UserModel
 import com.example.moodbloom.utils.extension.ResponseStates
 import com.example.moodbloom.utils.extension.SpacerHeight
 import com.example.moodbloom.utils.extension.SpacerWeight
@@ -51,7 +52,8 @@ fun SignUpScreenRoute(
     val userState by viewModel.userState.collectAsStateWithLifecycle()
     SignUpScreen(
         onRegisterSuccess = {
-            mainViewModel.firebaseUser=it
+            mainViewModel.firebaseUser=it.firebaseUser
+            mainViewModel.userModel=it
             viewModel.clearState()
             onNavigate(ScreensRoute.Home.route)
         },
@@ -65,9 +67,9 @@ fun SignUpScreenRoute(
 @Composable
 internal fun SignUpScreen(
     promptsViewModel: PromptsViewModel = hiltViewModel(),
-    userState: ResponseStates<FirebaseUser?> = ResponseStates.Idle,
+    userState: ResponseStates<UserModel?> = ResponseStates.Idle,
     onRegisterRequest: (RegisterUserRequestModel) -> Unit = {},
-    onRegisterSuccess: (FirebaseUser) -> Unit
+    onRegisterSuccess: (UserModel) -> Unit
 ) {
     var name by remember { mutableStateOf("") }
     var userName by remember { mutableStateOf("") }

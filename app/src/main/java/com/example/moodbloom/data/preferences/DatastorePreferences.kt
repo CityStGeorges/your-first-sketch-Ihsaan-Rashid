@@ -11,6 +11,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.moodbloom.data.di.dataStore
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -23,8 +24,7 @@ const val DataStore_NAME = "MoodBloom"
 
 class DatastorePreferences (private val context: Context) {
 
-    private val Context.preferences: DataStore<Preferences> by preferencesDataStore(name = DataStore_NAME)
-
+   // private val dataStore: DataStore<Preferences> = context.applicationContext.dataStore
 
 
 
@@ -37,7 +37,7 @@ class DatastorePreferences (private val context: Context) {
     fun getInt(key: String): Int {
         var value = 0
         runBlocking {
-            value = context.preferences.data.first()[intPreferencesKey(key)] ?: 0
+            value = DataStoreManager.getInstance().data.first()[intPreferencesKey(key)] ?: 0
         }
         return value
     }
@@ -50,7 +50,7 @@ class DatastorePreferences (private val context: Context) {
     fun getListInt(key: String): ArrayList<Int> {
         var value = ""
         runBlocking {
-            value = context.preferences.data.first()[stringPreferencesKey(key)] ?: ""
+            value = DataStoreManager.getInstance().data.first()[stringPreferencesKey(key)] ?: ""
         }
         val p = value
         val myList = TextUtils.split(p, "‚‗‚")
@@ -68,7 +68,7 @@ class DatastorePreferences (private val context: Context) {
     fun getLong(key: String): Long {
         var value: Long
         runBlocking {
-            value = context.preferences.data.first()[longPreferencesKey(key)] ?: 0
+            value = DataStoreManager.getInstance().data.first()[longPreferencesKey(key)] ?: 0
         }
         return value
     }
@@ -81,7 +81,7 @@ class DatastorePreferences (private val context: Context) {
     fun getFloat(key: String): Float {
         var value: Float
         runBlocking {
-            value =  context.preferences.data.first()[floatPreferencesKey(key)] ?: 0F
+            value =  DataStoreManager.getInstance().data.first()[floatPreferencesKey(key)] ?: 0F
         }
         return value
     }
@@ -108,7 +108,7 @@ class DatastorePreferences (private val context: Context) {
     fun getListDouble(key: String): ArrayList<Double> {
         var value = ""
         runBlocking {
-            value = context.preferences.data.first()[stringPreferencesKey(key)] ?: ""
+            value = DataStoreManager.getInstance().data.first()[stringPreferencesKey(key)] ?: ""
         }
         val p = value
         val myList = TextUtils.split(p, "‚‗‚")
@@ -126,7 +126,7 @@ class DatastorePreferences (private val context: Context) {
     fun getListLong(key: String): ArrayList<Long> {
         var value = ""
         runBlocking {
-            value = context.preferences.data.first()[stringPreferencesKey(key)] ?: ""
+            value = DataStoreManager.getInstance().data.first()[stringPreferencesKey(key)] ?: ""
         }
         val p = value
         val myList = TextUtils.split(p, "‚‗‚")
@@ -144,7 +144,7 @@ class DatastorePreferences (private val context: Context) {
     fun getString(key: String): String {
         var value = ""
         runBlocking {
-            value = context.preferences.data.first()[stringPreferencesKey(key)]?: ""
+            value = DataStoreManager.getInstance().data.first()[stringPreferencesKey(key)]?: ""
         }
         return value
     }
@@ -157,7 +157,7 @@ class DatastorePreferences (private val context: Context) {
     fun getListString(key: String): ArrayList<String> {
         var value = ""
         runBlocking {
-            value = context.preferences.data.first()[stringPreferencesKey(key)] ?: ""
+            value = DataStoreManager.getInstance().data.first()[stringPreferencesKey(key)] ?: ""
         }
         val p = value
         return ArrayList(listOf(*TextUtils.split(p, "‚‗‚")))
@@ -171,15 +171,13 @@ class DatastorePreferences (private val context: Context) {
     fun getBoolean(key: String, defaultValue :Boolean =false): Boolean {
         var value = false
         runBlocking(Dispatchers.IO) {
-            value = context.preferences.data.map {
-                it[booleanPreferencesKey(key)] ?: defaultValue
-            }.first()
+            value = DataStoreManager.getInstance().data.first()[booleanPreferencesKey(key)]?: defaultValue
         }
         return value
     }
 
     fun getBooleanWithFlow(key: String): Flow<Boolean> {
-        return context.preferences.data.map {
+        return DataStoreManager.getInstance().data.map {
             it[booleanPreferencesKey(key)] ?: false
         }
     }
@@ -229,7 +227,7 @@ class DatastorePreferences (private val context: Context) {
     fun putInt(key: String, value: Int) {
         checkForNullKey(key)
         runBlocking {
-            context.preferences.edit {
+            DataStoreManager.getInstance().edit {
                 it[intPreferencesKey(key)] = value
             }
         }
@@ -244,7 +242,7 @@ class DatastorePreferences (private val context: Context) {
         checkForNullKey(key)
         val myIntList = intList.toTypedArray()
         runBlocking {
-            context.preferences.edit {
+            DataStoreManager.getInstance().edit {
                 it[stringPreferencesKey(key)] = TextUtils.join("‚‗‚", myIntList)
             }
         }
@@ -258,7 +256,7 @@ class DatastorePreferences (private val context: Context) {
     fun putLong(key: String, value: Long) {
         checkForNullKey(key)
         runBlocking {
-            context.preferences.edit { it[longPreferencesKey(key)] = value }
+            DataStoreManager.getInstance().edit { it[longPreferencesKey(key)] = value }
         }
     }
 
@@ -272,7 +270,7 @@ class DatastorePreferences (private val context: Context) {
         val myLongList = longList.toTypedArray()
 
         runBlocking {
-            context.preferences.edit {
+            DataStoreManager.getInstance().edit {
                 it[stringPreferencesKey(key)] = TextUtils.join("‚‗‚", myLongList)
             }
         }
@@ -286,7 +284,7 @@ class DatastorePreferences (private val context: Context) {
     fun putFloat(key: String, value: Float) {
         checkForNullKey(key)
         runBlocking {
-            context.preferences.edit {
+            DataStoreManager.getInstance().edit {
                 it[floatPreferencesKey(key)] = value
             }
         }
@@ -311,7 +309,7 @@ class DatastorePreferences (private val context: Context) {
         checkForNullKey(key)
         val myDoubleList = doubleList.toTypedArray()
         runBlocking {
-            context.preferences.edit {
+            DataStoreManager.getInstance().edit {
                 it[stringPreferencesKey(key)] = TextUtils.join("‚‗‚", myDoubleList)
             }
         }
@@ -326,7 +324,7 @@ class DatastorePreferences (private val context: Context) {
         checkForNullKey(key)
         checkForNullValue(value)
         runBlocking {
-            context.preferences.edit {
+            DataStoreManager.getInstance().edit {
                 it[stringPreferencesKey(key)] = value
             }
         }
@@ -341,7 +339,7 @@ class DatastorePreferences (private val context: Context) {
         checkForNullKey(key)
         val myStringList = stringList.toTypedArray()
         runBlocking {
-            context.preferences.edit {
+            DataStoreManager.getInstance().edit {
                 it[stringPreferencesKey(key)] = TextUtils.join("‚‗‚", myStringList)
             }
         }
@@ -355,7 +353,7 @@ class DatastorePreferences (private val context: Context) {
     fun putBoolean(key: String, value: Boolean) {
         checkForNullKey(key)
         runBlocking {
-            context.preferences.edit {
+            DataStoreManager.getInstance().edit {
                 it[booleanPreferencesKey(key)] = value
             }
         }
@@ -406,7 +404,7 @@ class DatastorePreferences (private val context: Context) {
      */
     fun remove(key: String) {
         runBlocking {
-            context.preferences.edit {
+            DataStoreManager.getInstance().edit {
                 it.remove(stringPreferencesKey(key))
             }
         }
@@ -417,7 +415,7 @@ class DatastorePreferences (private val context: Context) {
      */
     fun clear() {
         runBlocking {
-            context.preferences.edit { it.clear() }
+            DataStoreManager.getInstance().edit { it.clear() }
         }
     }
 

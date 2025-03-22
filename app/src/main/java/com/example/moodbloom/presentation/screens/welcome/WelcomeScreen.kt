@@ -18,6 +18,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.moodbloom.presentation.MainViewModel
 import com.example.moodbloom.R
+import com.example.moodbloom.domain.models.auth.UserModel
 import com.example.moodbloom.utils.extension.ResponseStates
 import com.example.moodbloom.utils.extension.SpacerHeight
 import com.example.moodbloom.utils.extension.SpacerWeight
@@ -50,7 +51,8 @@ fun WelcomeScreenRoute(
 
     val userState by viewModel.userState.collectAsStateWithLifecycle()
     WelcomeScreen(onLoginSuccess = {
-        mainViewModel.firebaseUser = it
+        mainViewModel.firebaseUser = it.firebaseUser
+        mainViewModel.userModel = it
         viewModel.clearState()
         onNavigate(ScreensRoute.Home.route)
     }, userState = userState,
@@ -61,10 +63,10 @@ fun WelcomeScreenRoute(
 @Composable
 internal fun WelcomeScreen(
     promptsViewModel: PromptsViewModel = hiltViewModel(),
-    userState: ResponseStates<FirebaseUser?> = ResponseStates.Idle,
+    userState: ResponseStates<UserModel?> = ResponseStates.Idle,
     onNavigate: (String) -> Unit = {},
     onGoogleSignInRequest: (String) -> Unit = {},
-    onLoginSuccess: (FirebaseUser) -> Unit
+    onLoginSuccess: (UserModel) -> Unit
 ) {
     val context = LocalContext.current
     val activity = context as Activity

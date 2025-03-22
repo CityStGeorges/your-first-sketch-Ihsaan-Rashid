@@ -75,6 +75,11 @@ fun HomeScreenRoute(
         configurationModel=mainViewModel.configurationModel,
         updateConfigInMain = {mainViewModel.configurationModel=it},
         firebaseUser = mainViewModel.firebaseUser,
+        onLogOutCall = {
+            mainViewModel.logout()
+            mainViewModel.clearState()
+            onNavigate(ScreensRoute.Welcome.route)
+        },
         updateConfiguration = {
             configurationViewModel.adOrUpdateConfig(
                 mainViewModel.configurationModel.copy(
@@ -97,7 +102,8 @@ internal fun HomeScreen(
     deleteAccountRequest: (String)-> Unit = {},
     updateConfigInMain: (ConfigurationModel) -> Unit = {},
     updateConfiguration: (Boolean) -> Unit = {},
-    onNavigate: (String) -> Unit,
+    onNavigate: (String) -> Unit = {},
+    onLogOutCall: () -> Unit,
 
     ) {
 
@@ -116,7 +122,7 @@ internal fun HomeScreen(
                 },
                 negativeButtonText = "Yes",
                 negativeButtonClick = {
-                    onNavigate(ScreensRoute.Welcome.route)
+                   onLogOutCall()
                 },
                 onDismiss = {
                     promptsViewModel.updatePrompt(null)
@@ -173,7 +179,7 @@ internal fun HomeScreen(
                             modifier = Modifier.safeClickable(rippleEnabled = true) {
                                 if (item.route.isNotBlank()) {
                                     if (item.route == "helpline") {
-                                        val uri = Uri.parse("tel:" + "123456789")
+                                        val uri = Uri.parse("tel:" + "999")
                                         val intent = Intent(Intent.ACTION_DIAL, uri)
                                         try {
                                             context.startActivity(intent)

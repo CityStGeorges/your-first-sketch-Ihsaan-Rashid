@@ -3,6 +3,7 @@ package com.example.moodbloom.presentation.screens.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moodbloom.domain.models.auth.LoginRequestModel
+import com.example.moodbloom.domain.models.auth.UserModel
 import com.example.moodbloom.domain.usecases.auth.LoginUseCase
 import com.example.moodbloom.utils.extension.ResponseStates
 import com.google.firebase.auth.FirebaseUser
@@ -18,8 +19,8 @@ class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
 ) : ViewModel() {
 
-    private val _userState = MutableStateFlow<ResponseStates<FirebaseUser?>>(ResponseStates.Idle)
-    val userState: StateFlow<ResponseStates<FirebaseUser?>> = _userState
+    private val _userState = MutableStateFlow<ResponseStates<UserModel?>>(ResponseStates.Idle)
+    val userState: StateFlow<ResponseStates<UserModel?>> = _userState
 
     fun loginUser(request: LoginRequestModel) {
         viewModelScope.launch {

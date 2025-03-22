@@ -5,11 +5,11 @@ import android.util.Log
 import com.example.moodbloom.R
 import com.example.moodbloom.domain.models.auth.LoginRequestModel
 import com.example.moodbloom.domain.models.auth.RegisterUserRequestModel
+import com.example.moodbloom.domain.models.auth.UserModel
 import com.example.moodbloom.domain.repository.AuthRepo
 import com.example.moodbloom.utils.extension.ResponseStates
 import com.example.moodbloom.utils.extension.isNetworkAvailable
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -21,8 +21,8 @@ class AuthRepoImpl @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val auth: FirebaseAuth,
 ) : AuthRepo {
-
-    override suspend fun signInWithGoogle(idToken: String): ResponseStates<FirebaseUser?> {
+    private val userCollection = firestore.collection("users")
+    override suspend fun signInWithGoogle(idToken: String): ResponseStates<UserModel?> {
         return try {
             if (context.isNetworkAvailable()) {
                 val credential = GoogleAuthProvider.getCredential(idToken, null)
@@ -36,8 +36,15 @@ class AuthRepoImpl @Inject constructor(
                         "username" to it.email?.replace("@gmail.com", ""),
                     )
                     firestore.collection("users").document(it.uid).set(userData).await()
+                    ResponseStates.Success(200,  UserModel(
+                        firebaseUser =result.user,
+                        fullName = firebaseUser.displayName?:firebaseUser.email?.replace("@gmail.com", "")?:"",
+                        username = firebaseUser.email?.replace("@gmail.com", "")?:"",
+                        email = firebaseUser.email?:"",
+                        uid = firebaseUser.uid))
+                }?:run {
+                    ResponseStates.Failure(999, "Google Sign-In Failed")
                 }
-                ResponseStates.Success(200, result.user)
             } else {
                 ResponseStates.Failure(
                     111,
@@ -50,7 +57,7 @@ class AuthRepoImpl @Inject constructor(
         }
     }
 
-    override suspend fun registerUser(request: RegisterUserRequestModel): ResponseStates<FirebaseUser?> {
+    override suspend fun registerUser(request: RegisterUserRequestModel): ResponseStates<UserModel?> {
         return try {
             if (context.isNetworkAvailable()) {
                 val result =
@@ -60,7 +67,13 @@ class AuthRepoImpl @Inject constructor(
                     firestore.collection("users").document(it.uid).set(request.copy(uid = it.uid))
                         .await()
                 }
-                ResponseStates.Success(200, firebaseUser)
+                ResponseStates.Success(200,
+                    UserModel(firebaseUser =firebaseUser,
+                    fullName = request.fullName,
+                    username = request.username,
+                    email = request.email,
+                    uid = firebaseUser?.uid?:"")
+                )
             } else {
                 ResponseStates.Failure(
                     111,
@@ -73,12 +86,28 @@ class AuthRepoImpl @Inject constructor(
         }
     }
 
-    override suspend fun loginUser(request: LoginRequestModel): ResponseStates<FirebaseUser?> {
+    override suspend fun loginUser(request: LoginRequestModel): ResponseStates<UserModel?> {
         return try {
             if (context.isNetworkAvailable()) {
                 val result =
                     auth.signInWithEmailAndPassword(request.email, request.password).await()
-                ResponseStates.Success(200, result.user)
+                result.user?.let { user->
+                    val querySnapshot = userCollection
+                        .whereEqualTo("userId",user.uid)
+                    .get()
+                    .await()
+                    if (querySnapshot.documents.isNotEmpty()){
+                        querySnapshot.documents.first().toObject(UserModel::class.java)?.let {
+                            ResponseStates.Success(200,it)
+                        } ?: run {
+                            ResponseStates.Failure(999, "User not found.")
+                        }
+                    }else{
+                        ResponseStates.Failure(999, "User not found.")
+                    }
+                }?:run {
+                    ResponseStates.Failure(999, "User not found.")
+                }
             } else {
                 ResponseStates.Failure(
                     111,
