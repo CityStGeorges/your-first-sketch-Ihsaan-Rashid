@@ -64,7 +64,13 @@ class AuthRepoImpl @Inject constructor(
                     auth.createUserWithEmailAndPassword(request.email, request.password).await()
                 val firebaseUser = result.user
                 firebaseUser?.let {
-                    firestore.collection("users").document(it.uid).set(request.copy(uid = it.uid))
+                    val userData = hashMapOf(
+                        "uid" to it.uid,
+                        "email" to request.email,
+                        "fullName" to request.fullName,
+                        "username" to request.username,
+                    )
+                    firestore.collection("users").document(it.uid).set(userData)
                         .await()
                 }
                 ResponseStates.Success(200,
@@ -93,7 +99,7 @@ class AuthRepoImpl @Inject constructor(
                     auth.signInWithEmailAndPassword(request.email, request.password).await()
                 result.user?.let { user->
                     val querySnapshot = userCollection
-                        .whereEqualTo("userId",user.uid)
+                        .whereEqualTo("uid",user.uid)
                     .get()
                     .await()
                     if (querySnapshot.documents.isNotEmpty()){

@@ -41,6 +41,7 @@ import com.example.moodbloom.presentation.components.ScreenContainer
 import com.example.moodbloom.presentation.components.TextButton
 import com.example.moodbloom.presentation.components.TextInputField
 import com.example.moodbloom.presentation.components.hpr
+import com.example.moodbloom.presentation.components.safeClickable
 import com.example.moodbloom.presentation.components.sdp
 import com.example.moodbloom.presentation.components.textSdp
 import com.example.moodbloom.presentation.routes.ScreensRoute
@@ -130,8 +131,10 @@ internal fun SignUpScreen(
                 placeholder = "Enter your password",
                 label = "Password",
                 trailing = {
-                    val image = if (passwordVisible) R.drawable.ic_eye_close else  R.drawable.ic_eye_open
-                    ResourceImage(image = image, modifier = Modifier.size(18.sdp))
+                    val image = if (passwordVisible) R.drawable.ic_eye_open else  R.drawable.ic_eye_close
+                    ResourceImage(image = image, modifier = Modifier.size(18.sdp).safeClickable {
+                        passwordVisible=!passwordVisible
+                    })
                 },
             )
             SpacerWeight(1f)

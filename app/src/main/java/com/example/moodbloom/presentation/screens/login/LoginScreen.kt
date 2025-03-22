@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -13,6 +14,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -33,6 +36,7 @@ import com.example.moodbloom.presentation.components.ScreenContainer
 import com.example.moodbloom.presentation.components.TextButton
 import com.example.moodbloom.presentation.components.TextInputField
 import com.example.moodbloom.presentation.components.hpr
+import com.example.moodbloom.presentation.components.safeClickable
 import com.example.moodbloom.presentation.components.sdp
 import com.example.moodbloom.presentation.components.textSdp
 import com.example.moodbloom.presentation.routes.ScreensRoute
@@ -68,6 +72,7 @@ internal fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val context = LocalContext.current
+    var passwordVisible by remember { mutableStateOf(false) }
     val currentPrompt by promptsViewModel.currentPrompt.collectAsStateWithLifecycle()
     ScreenContainer(currentPrompt = currentPrompt) {
         Column(
@@ -90,9 +95,16 @@ internal fun LoginScreen(
             TextInputField(
                 value = password,
                 onValueChange = { password = it },
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 singleLine = true,
                 placeholder = "Enter your password",
                 label = "Password",
+                trailing = {
+                    val image = if (passwordVisible) R.drawable.ic_eye_open else  R.drawable.ic_eye_close
+                    ResourceImage(image = image, modifier = Modifier.size(18.sdp).safeClickable {
+                        passwordVisible=!passwordVisible
+                    })
+                },
             )
             SpacerWeight(1f)
             TextButton(
