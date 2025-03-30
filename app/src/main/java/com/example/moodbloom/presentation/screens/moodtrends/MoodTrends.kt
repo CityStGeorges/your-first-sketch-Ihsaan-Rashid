@@ -1,5 +1,6 @@
 package com.example.moodbloom.presentation.screens.moodtrends
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -32,8 +33,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.yml.charts.axis.AxisData
@@ -63,9 +66,13 @@ import com.example.moodbloom.presentation.components.ResourceImage
 import com.example.moodbloom.presentation.components.ScreenContainer
 import com.example.moodbloom.presentation.components.TopAppBar
 import com.example.moodbloom.presentation.components.hpr
+import com.example.moodbloom.presentation.components.safeClickable
 import com.example.moodbloom.presentation.components.sdp
+import com.example.moodbloom.presentation.components.textSdp
 import com.example.moodbloom.ui.typo.BodyMediumText
+import com.example.moodbloom.ui.typo.BodySmallText
 import com.example.moodbloom.ui.typo.TitleLargeText
+import com.example.moodbloom.utils.extension.showToast
 
 @Composable
 fun MoodTrendsScreenRoute(
@@ -75,6 +82,7 @@ fun MoodTrendsScreenRoute(
     viewModel: MoodsTrendsViewModel = hiltViewModel()
 ) {
     val chartData by viewModel.chartData.collectAsStateWithLifecycle()
+    val pointsData by viewModel.pointsData.collectAsStateWithLifecycle()
     val generateMoodsInsightsState by viewModel.generateMoodsInsightsState.collectAsStateWithLifecycle()
     val listLogMoodState by viewModel.listLogMoodState.collectAsStateWithLifecycle()
     MoodTrendsScreen(
@@ -86,10 +94,11 @@ fun MoodTrendsScreenRoute(
             onBackClick()
         },
         getLastDates = {viewModel.getChartData(chartType = it, userName = mainViewModel.userModel?.fullName?:"")},
-        chartData = chartData
+        chartData = chartData,
+        pointsData = pointsData,
     )
     LaunchedEffect(Unit) {
-        viewModel.getUserAllMoodLogList(firebaseUser =mainViewModel.userModel)
+        viewModel.getUserAllMoodLogList(firebaseUser = mainViewModel.userModel)
     }
 }
 
@@ -100,6 +109,7 @@ internal fun MoodTrendsScreen(
     listLogMoodState: ResponseStates<List<LogMoodsResponseModel>> = ResponseStates.Idle,
     generateMoodsInsightsState: ResponseStates<String> = ResponseStates.Idle,
     chartData: List<ChartDataModel> = listOf(),
+    pointsData: List<Point> = listOf(),
     getLastDates: (ChartType) -> Unit = { _ -> },
 
     onBackClick: () -> Unit
@@ -108,7 +118,7 @@ internal fun MoodTrendsScreen(
     val currentPrompt by promptsViewModel.currentPrompt.collectAsStateWithLifecycle()
     val configuration = LocalConfiguration.current
     val screenWidthDp = configuration.screenWidthDp.dp
-
+    val context = LocalContext.current
     val yAxisImages = listOf(
         R.drawable.emoji_very_happy, // 0
         R.drawable.emoji_happy, // 1
@@ -123,22 +133,15 @@ internal fun MoodTrendsScreen(
         ChartType.DAILY, ChartType.WEEKLY, ChartType.MONTHLY
     )
     var dataShowOption by remember { mutableStateOf(ChartType.DAILY) }
+    var selectedPoint by remember { mutableStateOf<ChartDataModel?>(null) }
 
-
-    // Function to get labels dynamically
-    val pointsData: List<Point> = chartData.mapIndexed { index, dateModel ->
-        Point(
-            index.toFloat(),
-            dateModel.modeScore.toFloat()
-        )
-    }
 
     val xAxisData = AxisData.Builder()
         .startDrawPadding(0.dp)
         .axisStepSize((screenWidthDp / 8) - 2.dp)
         .axisLineColor(MaterialTheme.colorScheme.surfaceVariant)
         .axisLineThickness(1.dp)
-        .steps(pointsData.size - 1)
+        .steps(6)
         .labelData { i ->
             if (i < chartData.size) {
                 chartData[i].label
@@ -149,16 +152,25 @@ internal fun MoodTrendsScreen(
         .labelAndAxisLinePadding(15.dp)
         .build()
 
-
+/*
     val yAxisData = AxisData.Builder()
         .steps(6).axisLineColor(MaterialTheme.colorScheme.surfaceVariant)
         .axisLineThickness(2.dp)
-        /*.backgroundColor(Color.Red)*/
+        *//*.backgroundColor(Color.Red)*//*
         .labelAndAxisLinePadding(20.dp)
         .labelData { i ->
-            val yScale = 100 / pointsData.size
+           val yScale = 100 / pointsData.size
             (i * yScale).toString()
-        }.build()
+            i.toString()
+        }.build()*/
+
+    val yAxisData = AxisData.Builder()
+        .steps(6) // Define 6 steps for 0 to 6 range
+        .axisLineColor(MaterialTheme.colorScheme.surfaceVariant)
+        .axisLineThickness(2.dp)
+        .labelAndAxisLinePadding(20.dp)
+        .labelData { i -> (i).toString() }
+        .build()
 
     val lineChartData = LineChartData(
         linePlotData = LinePlotData(
@@ -170,10 +182,15 @@ internal fun MoodTrendsScreen(
                     SelectionHighlightPoint(color = MaterialTheme.colorScheme.primary),
                     ShadowUnderLine(color = MaterialTheme.colorScheme.primary),
                     SelectionHighlightPopUp(
+                        labelSize=9.sp,
                         popUpLabel = { x, y ->
-                            val xLabel = "x : ${x.toInt()} "
-                            val yLabel = "y : ${String.format("%.2f", y)}"
-                             "${textToEmoji(y)} $xLabel $yLabel"
+                            val mood = y.toInt().getMoodTypeFromScore().title
+                            if(chartData[x.toInt()].aboutMood.isNotBlank()){
+                                selectedPoint=chartData[x.toInt()]
+                            }else{
+                                selectedPoint=null
+                            }
+                            "${textToEmoji(y)} $mood"
                         },
                     )
                 )
@@ -182,10 +199,6 @@ internal fun MoodTrendsScreen(
         xAxisData = xAxisData,
         yAxisData = yAxisData,
         isZoomAllowed = false,
-
-
-        /*  gridLines = GridLines(),*/
-        /*backgroundColor = Color.Red*/
     )
     ScreenContainer(currentPrompt = currentPrompt) {
         Column(
@@ -210,7 +223,7 @@ internal fun MoodTrendsScreen(
                     Box(contentAlignment = Alignment.TopStart) {
                         if (pointsData.isNotEmpty()) {
                             LineChart(
-                                modifier = Modifier
+                                modifier = Modifier.safeClickable { selectedPoint=null }
                                     .fillMaxWidth()
                                     .height(200.sdp),
                                 lineChartData = lineChartData
@@ -235,7 +248,14 @@ internal fun MoodTrendsScreen(
                         }
 
                     }
-                    SpacerHeight(10.sdp)
+                    selectedPoint?.let {selectedPoint->
+                        BodySmallText(
+                            modifier = Modifier.padding(start = 20.sdp),
+                            fontSize = 12.textSdp,
+                            text = selectedPoint.aboutMood, maxLines = 2
+                        )
+                    }
+                    SpacerHeight(5.sdp)
                     LazyRow(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceAround
@@ -315,7 +335,6 @@ fun textToEmoji(score: Float): String {
         6f -> "\uD83D\uDE0D" // 😍
         else -> "\uD83D\uDE10" // 🙂
     }
-
 }
 @Preview(showBackground = true)
 @Composable
