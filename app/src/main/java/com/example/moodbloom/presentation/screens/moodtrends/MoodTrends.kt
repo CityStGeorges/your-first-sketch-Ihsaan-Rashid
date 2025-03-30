@@ -71,6 +71,7 @@ import com.example.moodbloom.presentation.components.sdp
 import com.example.moodbloom.presentation.components.textSdp
 import com.example.moodbloom.ui.typo.BodyMediumText
 import com.example.moodbloom.ui.typo.BodySmallText
+import com.example.moodbloom.ui.typo.LabelSmallText
 import com.example.moodbloom.ui.typo.TitleLargeText
 import com.example.moodbloom.utils.extension.showToast
 
@@ -249,9 +250,10 @@ internal fun MoodTrendsScreen(
 
                     }
                     selectedPoint?.let {selectedPoint->
-                        BodySmallText(
+                        LabelSmallText(
                             modifier = Modifier.padding(start = 20.sdp),
                             fontSize = 12.textSdp,
+                            overrideColor = MaterialTheme.colorScheme.primary,
                             text = selectedPoint.aboutMood, maxLines = 2
                         )
                     }

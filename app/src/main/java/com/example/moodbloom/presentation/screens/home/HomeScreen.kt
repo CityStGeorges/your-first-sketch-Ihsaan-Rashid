@@ -152,7 +152,9 @@ internal fun HomeScreen(
                 fontSize = 28.textSdp
             )
             SpacerHeight(2.hpr)
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.safeClickable {
+                onNavigate(ScreensRoute.MoodTrends.route)
+            }) {
                 HeadlineMediumText(text = "Your Mood this week:")
                 SpacerWidth(5.sdp)
                 ResourceImage(

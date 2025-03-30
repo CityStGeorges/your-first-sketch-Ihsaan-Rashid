@@ -42,17 +42,6 @@ class MoodsTrendsViewModel @Inject constructor(
     val pointsData: StateFlow<List<Point>> = _pointsData.asStateFlow()
 
 
-    // Function to get labels dynamically
-    /* val pointsData: List<Point> = chartData.mapIndexed { index, dateModel ->
-         Log.d("MoodScore","${dateModel.modeScore.toFloat()}")
-         Point(
-             index.toFloat(),
-             dateModel.modeScore.toFloat()
-         )
-     }
- */
-
-
     private val _listLogMoodState =
         MutableStateFlow<ResponseStates<List<LogMoodsResponseModel>>>(ResponseStates.Idle)
     val listLogMoodState: StateFlow<ResponseStates<List<LogMoodsResponseModel>>> = _listLogMoodState
@@ -102,7 +91,7 @@ class MoodsTrendsViewModel @Inject constructor(
         }
         _pointsData.value = listPoints
 
-        //generateMoodsInsights(userName,lastDays=chartType.value)
+        generateMoodsInsights(userName,lastDays=chartType.value)
         /*_pointsData.value =  listOf(
             Point(0f, 6f), // Monday
             Point(0f, 0f), // Monday
