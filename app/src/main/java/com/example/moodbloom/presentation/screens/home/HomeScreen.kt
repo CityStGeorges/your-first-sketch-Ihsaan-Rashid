@@ -51,7 +51,7 @@ import com.example.moodbloom.presentation.screens.home.viewModel.ConfigurationVi
 import com.example.moodbloom.presentation.screens.home.viewModel.HomeViewModel
 import com.example.moodbloom.presentation.routes.ScreensRoute
 import com.example.moodbloom.ui.typo.HeadlineMediumText
-import com.google.firebase.auth.FirebaseUser
+import com.example.moodbloom.utils.extension.MoodType
 
 
 @Composable
@@ -63,14 +63,16 @@ fun HomeScreenRoute(
 ) {
 
     val getUserConfigState by configurationViewModel.getUserConfigState.collectAsStateWithLifecycle()
+    val listLogMoodState by homeViewModel.listLogMoodState.collectAsStateWithLifecycle()
     val deleteAccountState by homeViewModel.deleteAccountState.collectAsStateWithLifecycle()
     val adOrUpdateConfigState by configurationViewModel.adOrUpdateConfigState.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
-        configurationViewModel.getUserConfig(mainViewModel.firebaseUser?.uid ?: "")
+        configurationViewModel.getUserConfig(mainViewModel.userModel?.uid ?: "")
     }
     HomeScreen(onNavigate = onNavigate,
         getUserConfigState = getUserConfigState,
         deleteAccountState = deleteAccountState,
+        listLogMoodState = listLogMoodState,
         deleteAccountRequest=homeViewModel::deleteAccount,
         adOrUpdateConfigState = adOrUpdateConfigState,
         configurationModel=mainViewModel.configurationModel,
@@ -82,10 +84,11 @@ fun HomeScreenRoute(
             onNavigate(ScreensRoute.Welcome.route)
         },
         updateConfiguration = {
+            val config=mainViewModel.configurationModel.copy(
+                userId = mainViewModel.userModel?.uid ?: "", enableNotification = it
+            )
             configurationViewModel.adOrUpdateConfig(
-                mainViewModel.configurationModel.copy(
-                    userId = mainViewModel.firebaseUser?.uid ?: "", isEnableNotification = it
-                )
+                config
             )
         }
     )
@@ -97,6 +100,7 @@ internal fun HomeScreen(
     promptsViewModel: PromptsViewModel = hiltViewModel(),
     firebaseUser: UserModel? = null,
     getUserConfigState: ResponseStates<ConfigurationModel> = ResponseStates.Idle,
+    listLogMoodState: ResponseStates<MoodType> = ResponseStates.Idle,
     configurationModel: ConfigurationModel = ConfigurationModel(),
     adOrUpdateConfigState: ResponseStates<String> = ResponseStates.Idle,
     deleteAccountState: ResponseStates<String> = ResponseStates.Idle,
@@ -110,6 +114,7 @@ internal fun HomeScreen(
 
     val currentPrompt by promptsViewModel.currentPrompt.collectAsStateWithLifecycle()
     var isNotificationEnable by remember { mutableStateOf(false) }
+    var moodType by remember { mutableStateOf(MoodType.NORMAL) }
     val listHomeOptions = getHomeOptions()
     val context = LocalContext.current
     fun logout() {
@@ -151,7 +156,7 @@ internal fun HomeScreen(
                 HeadlineMediumText(text = "Your Mood this week:")
                 SpacerWidth(5.sdp)
                 ResourceImage(
-                    image = LottieCompositionSpec.RawRes(R.raw.anim2_mood_very_happy),
+                    image = LottieCompositionSpec.RawRes(moodType.emoji),
                     modifier = Modifier.size(60.sdp)
                 )
             }
@@ -230,7 +235,7 @@ internal fun HomeScreen(
     ) { it ->
         LaunchedEffect(Unit) {
             updateConfigInMain(it)
-            isNotificationEnable = it.isEnableNotification
+            isNotificationEnable = it.enableNotification
         }
     }
 
@@ -245,7 +250,7 @@ internal fun HomeScreen(
         },
         onSuccess = {
             LaunchedEffect(Unit) {
-                updateConfigInMain(configurationModel.copy(isEnableNotification = isNotificationEnable))
+                updateConfigInMain(configurationModel.copy(enableNotification = isNotificationEnable))
                 DatastorePreferences(context).putBoolean(PreferenceKey.isEnableNotification, isNotificationEnable)
             }
         }
@@ -264,6 +269,15 @@ internal fun HomeScreen(
                         onDismiss = { promptsViewModel.updatePrompt(null) }
                     )
                 )
+            }
+        }
+    )
+    HandleApiStates(
+        state = listLogMoodState,
+        updatePrompt = promptsViewModel::updatePrompt,
+        onSuccess = {
+            LaunchedEffect(Unit) {
+                moodType= it
             }
         }
     )

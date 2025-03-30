@@ -36,13 +36,17 @@ class AuthRepoImpl @Inject constructor(
                         "username" to it.email?.replace("@gmail.com", ""),
                     )
                     firestore.collection("users").document(it.uid).set(userData).await()
-                    ResponseStates.Success(200,  UserModel(
-                        firebaseUser =result.user,
-                        fullName = firebaseUser.displayName?:firebaseUser.email?.replace("@gmail.com", "")?:"",
-                        username = firebaseUser.email?.replace("@gmail.com", "")?:"",
-                        email = firebaseUser.email?:"",
-                        uid = firebaseUser.uid))
-                }?:run {
+                    ResponseStates.Success(
+                        200, UserModel(
+                            firebaseUser = result.user,
+                            fullName = firebaseUser.displayName
+                                ?: firebaseUser.email?.replace("@gmail.com", "") ?: "",
+                            username = firebaseUser.email?.replace("@gmail.com", "") ?: "",
+                            email = firebaseUser.email ?: "",
+                            uid = firebaseUser.uid
+                        )
+                    )
+                } ?: run {
                     ResponseStates.Failure(999, "Google Sign-In Failed")
                 }
             } else {
@@ -73,12 +77,15 @@ class AuthRepoImpl @Inject constructor(
                     firestore.collection("users").document(it.uid).set(userData)
                         .await()
                 }
-                ResponseStates.Success(200,
-                    UserModel(firebaseUser =firebaseUser,
-                    fullName = request.fullName,
-                    username = request.username,
-                    email = request.email,
-                    uid = firebaseUser?.uid?:"")
+                ResponseStates.Success(
+                    200,
+                    UserModel(
+                        firebaseUser = firebaseUser,
+                        fullName = request.fullName,
+                        username = request.username,
+                        email = request.email,
+                        uid = request.uid ?: ""
+                    )
                 )
             } else {
                 ResponseStates.Failure(
@@ -97,21 +104,23 @@ class AuthRepoImpl @Inject constructor(
             if (context.isNetworkAvailable()) {
                 val result =
                     auth.signInWithEmailAndPassword(request.email, request.password).await()
-                result.user?.let { user->
+                result.user?.let { user ->
                     val querySnapshot = userCollection
-                        .whereEqualTo("uid",user.uid)
-                    .get()
-                    .await()
-                    if (querySnapshot.documents.isNotEmpty()){
+                        .whereEqualTo("uid", user.uid)
+                        .get()
+                        .await()
+                    if (querySnapshot.documents.isNotEmpty()) {
+                        Log.d("AuthRepository", "User found ${querySnapshot.documents.size}")
                         querySnapshot.documents.first().toObject(UserModel::class.java)?.let {
-                            ResponseStates.Success(200,it)
+                            Log.d("AuthRepository", "User found ${user.uid} && ${it.fullName}")
+                            ResponseStates.Success(200, it.copy(firebaseUser = user))
                         } ?: run {
                             ResponseStates.Failure(999, "User not found.")
                         }
-                    }else{
+                    } else {
                         ResponseStates.Failure(999, "User not found.")
                     }
-                }?:run {
+                } ?: run {
                     ResponseStates.Failure(999, "User not found.")
                 }
             } else {

@@ -58,7 +58,7 @@ fun LogDailyMoodRoute(
         },
         logMoodState = logMoodState,
         onBackClick = onBackClick,
-        userId = mainViewModel.firebaseUser?.uid ?: "",
+        userId = mainViewModel.userModel?.uid ?: "",
         onLogMoodCall = viewModel::logMood
     )
 }
@@ -115,7 +115,11 @@ internal fun LogDailyMoodScreen(
             TextInputField(
                 value = aboutMood,
                 modifier = Modifier.height(150.sdp),
-                onValueChange = { aboutMood = it },
+                onValueChange = {
+                    if (it.length < 200) {
+                        aboutMood = it
+                    }
+                },
                 placeholder = "Write about your mood today",
                 label = "About your mood today (Optional)",
                 minLines = 5,
@@ -146,37 +150,39 @@ internal fun LogDailyMoodScreen(
     ) { it ->
         LaunchedEffect(Unit) {
             var goToTrends = false
-            promptsViewModel.updatePrompt(PromptTypeShow.Confirmation(img = R.drawable.ic_success,
-                title = "Mood entry saved!",
-                message = it,
-                positiveButtonText = "View mood trends",
-                positiveButtonClick = {
-                    goToTrends = true
+            promptsViewModel.updatePrompt(
+                PromptTypeShow.Confirmation(img = R.drawable.ic_success,
+                    title = "Mood entry saved!",
+                    message = it,
+                    positiveButtonText = "View mood trends",
+                    positiveButtonClick = {
+                        goToTrends = true
 
-                },
-                negativeButtonText = "Go to home",
-                negativeButtonClick = {
-                },
-                onDismiss = {
-                    promptsViewModel.updatePrompt(null)
-                    if (goToTrends) {
-                        onNavigate(ScreensRoute.MoodTrends.route)
-                    } else {
-                        onBackClick()
-                    }
-                }))
+                    },
+                    negativeButtonText = "Go to home",
+                    negativeButtonClick = {
+                    },
+                    onDismiss = {
+                        promptsViewModel.updatePrompt(null)
+                        if (goToTrends) {
+                            onNavigate(ScreensRoute.MoodTrends.route)
+                        } else {
+                            onBackClick()
+                        }
+                    })
+            )
         }
     }
 }
 
 fun getMoodsList(): List<MoodType> {
     return listOf(
-       MoodType.VHAPPY,
-       MoodType.HAPPY,
-       MoodType.NORMAL,
-       MoodType.UNCERTAIN,
-       MoodType.SAD,
-       MoodType.VSAD,
-       MoodType.ANGRY,
+        MoodType.VHAPPY,
+        MoodType.HAPPY,
+        MoodType.NORMAL,
+        MoodType.UNCERTAIN,
+        MoodType.SAD,
+        MoodType.VSAD,
+        MoodType.ANGRY,
     )
 }

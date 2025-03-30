@@ -68,7 +68,7 @@ fun CustomHabitTrackerRoute(
         onNavigate = onNavigate,
         insertHabitState = insertHabitState,
         insertNewHabit = viewModel::insertHabit,
-        userId = mainViewModel.firebaseUser?.uid ?: "",
+        userId = mainViewModel.userModel?.uid ?: "",
         onBackClick = onBackClick
     )
 }

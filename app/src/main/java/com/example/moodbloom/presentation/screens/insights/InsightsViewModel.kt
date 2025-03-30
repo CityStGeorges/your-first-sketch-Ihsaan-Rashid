@@ -95,7 +95,8 @@ class InsightsViewModel @Inject constructor(
                 modeType = logMood?.type ?: MoodType.NORMAL.type,
                 modeScore = logMood?.moodScore ?: MoodType.NORMAL.moodScore,
                 label = date.format(dayFormatter),
-                weekOfYear = date.get(WeekFields.of(Locale.getDefault()).weekOfYear())
+                weekOfYear = date.get(WeekFields.of(Locale.getDefault()).weekOfYear()),
+                aboutMood = logMood?.aboutMood?:""
             )
         }
     }
@@ -122,7 +123,8 @@ class InsightsViewModel @Inject constructor(
                 modeType = avgMoodScore.getMoodTypeFromScore().type,
                 modeScore = avgMoodScore,
                 label = "W-${weekDate.get(WeekFields.of(Locale.getDefault()).weekOfYear())}",
-                weekOfYear = weekDate.get(WeekFields.of(Locale.getDefault()).weekOfYear())
+                weekOfYear = weekDate.get(WeekFields.of(Locale.getDefault()).weekOfYear()),
+                aboutMood = ""
             )
         }
     }
@@ -149,7 +151,8 @@ class InsightsViewModel @Inject constructor(
                 modeType = avgMoodScore.getMoodTypeFromScore().type,
                 modeScore = avgMoodScore,
                 label = monthDate.format(formatMonth),
-                weekOfYear = monthDate.get(WeekFields.of(Locale.getDefault()).weekOfYear())
+                weekOfYear = monthDate.get(WeekFields.of(Locale.getDefault()).weekOfYear()),
+                aboutMood = ""
             )
         }
     }

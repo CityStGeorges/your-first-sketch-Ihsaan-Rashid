@@ -71,7 +71,7 @@ fun UpdateHabitTrackerRoute(
             viewModel.clearStates()
             onNavigate()
         },
-        userId = mainViewModel.firebaseUser?.uid ?: "",
+        userId = mainViewModel.userModel?.uid ?: "",
         updateHabit = viewModel::updateHabit,
         onBackClick = onBackClick
     )

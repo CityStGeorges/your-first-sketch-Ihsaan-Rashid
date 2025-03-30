@@ -16,7 +16,7 @@ object NetworkModule {
 
     //private const val BASE_URL = "https://api.openai.com/"
     private const val BASE_URL = "https://generativelanguage.googleapis.com/"
-     const val GEMINI_API_KEY = ""
+     const val GEMINI_API_KEY = "AIzaSyBvasMannyavronO9UvGG4tmKkLa9tbhLw"
 
     @Provides
     @Singleton

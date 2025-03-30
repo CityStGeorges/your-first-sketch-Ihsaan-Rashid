@@ -67,7 +67,16 @@ fun SelectExerciseRoute(
             mainViewModel.selectedExercise = it
             onNavigate(ScreensRoute.Exercise.route)
         },
-        onBackClick = onBackClick
+        onBackClick = onBackClick,
+        updateConfiguration = {isRelaxingSoundEnable,isVoiceGuidanceEnable->
+          val config=  mainViewModel.configurationModel.copy(
+                userId = mainViewModel.userModel?.uid ?: "", enableRelaxingSound = isRelaxingSoundEnable, enableVoiceGuidance =isVoiceGuidanceEnable
+            )
+            configurationViewModel.adOrUpdateConfig(
+                config
+            )
+            mainViewModel.configurationModel=config
+        }
     )
 }
 
@@ -85,9 +94,9 @@ internal fun SelectExerciseScreen(
 
     val currentPrompt by promptsViewModel.currentPrompt.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    var selectedExerciseType: ExerciseModel? by remember { mutableStateOf(listExercise.takeIf {!it.isNullOrEmpty() }?.first()) }
-    var isRelaxingSoundEnable by remember { mutableStateOf(configurationModel.isEnableRelaxingSound) }
-    var isVoiceGuidanceEnable by remember { mutableStateOf(configurationModel.isEnableVoiceGuidance) }
+    var selectedExerciseType: ExerciseModel? by remember { mutableStateOf(null) }
+    var isRelaxingSoundEnable by remember { mutableStateOf(configurationModel.enableRelaxingSound) }
+    var isVoiceGuidanceEnable by remember { mutableStateOf(configurationModel.enableVoiceGuidance) }
     var totalMinutes by remember { mutableStateOf(selectedExerciseType?.timerMinutes?:3) }
     ScreenContainer(currentPrompt = currentPrompt) {
         Column(
@@ -209,7 +218,7 @@ internal fun SelectExerciseScreen(
         },
         onSuccess = {
             LaunchedEffect(Unit) {
-                updateConfigInMain(configurationModel.copy(isEnableRelaxingSound = isRelaxingSoundEnable, isEnableVoiceGuidance = isVoiceGuidanceEnable))
+                updateConfigInMain(configurationModel.copy(enableRelaxingSound = isRelaxingSoundEnable, enableVoiceGuidance = isVoiceGuidanceEnable))
             }
         }
     )

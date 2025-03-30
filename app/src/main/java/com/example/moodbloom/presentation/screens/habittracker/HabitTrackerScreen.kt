@@ -59,11 +59,11 @@ fun HabitTrackerRoute(
     val updateHabitState by viewModel.updateHabitState.collectAsStateWithLifecycle()
     val deleteHabitState by viewModel.deleteHabitState.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
-        viewModel.listHabit(mainViewModel.firebaseUser?.uid?:"")
+        viewModel.listHabit(mainViewModel.userModel?.uid?:"")
     }
     HabitTrackerScreen(onNavigate = onNavigate,
         onDeleteClick={
-            viewModel.deleteHabit(habitTitle = it, userId = mainViewModel.firebaseUser?.uid?:"")
+            viewModel.deleteHabit(habitTitle = it, userId = mainViewModel.userModel?.uid?:"")
         },
         onEditClick = {
             mainViewModel.selectedHabitTracker=it

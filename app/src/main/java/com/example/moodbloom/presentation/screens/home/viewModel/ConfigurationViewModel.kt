@@ -35,8 +35,10 @@ class ConfigurationViewModel @Inject constructor(
 
     fun getUserConfig(userId: String) {
         viewModelScope.launch {
-            _getUserConfigState.value = ResponseStates.Loading
-            _getUserConfigState.value = getUserConfigUseCase.invoke(userId)
+            if (userId.isNotBlank()){
+                _getUserConfigState.value = ResponseStates.Loading
+                _getUserConfigState.value = getUserConfigUseCase.invoke(userId)
+            }
         }
     }
 

@@ -59,7 +59,7 @@ object DataHelper {
 
             HabitTrackerModel(
                 title = "Music",
-                iconUrl = "R.drawable.ic_habit_brush",
+                iconUrl = "R.drawable.ic_habit_music",
                 selectedDays = listOf(),
                 reminderTimes = listOf()
             ),
@@ -67,49 +67,49 @@ object DataHelper {
 
             HabitTrackerModel(
                 title = "Jogging",
-                iconUrl = "R.drawable.ic_habit_brush",
+                iconUrl = "R.drawable.ic_habit_jogging",
                 selectedDays = listOf(),
                 reminderTimes = listOf()
             ),
             HabitTrackerModel(
                 title = "Cycling",
-                iconUrl = "R.drawable.ic_habit_brush",
+                iconUrl = "R.drawable.ic_habit_cycling",
                 selectedDays = listOf(),
                 reminderTimes = listOf()
             ),
             HabitTrackerModel(
                 title = "Quit\nSmoking",
-                iconUrl = "R.drawable.ic_habit_brush",
+                iconUrl = "R.drawable.ic_habit_smooking",
                 selectedDays = listOf(),
                 reminderTimes = listOf()
             ),
             HabitTrackerModel(
                 title = "Avoid\nJunk Food",
-                iconUrl = "R.drawable.ic_habit_brush",
+                iconUrl = "R.drawable.ic_habit_junkfood",
                 selectedDays = listOf(),
                 reminderTimes = listOf()
             ),
             HabitTrackerModel(
                 title = "Volunteering",
-                iconUrl = "R.drawable.ic_habit_brush",
+                iconUrl = "R.drawable.ic_habit_volunteering",
                 selectedDays = listOf(),
                 reminderTimes = listOf()
             ),
             HabitTrackerModel(
                 title = "Cardio",
-                iconUrl = "R.drawable.ic_habit_brush",
+                iconUrl = "R.drawable.ic_habit_cardio",
                 selectedDays = listOf(),
                 reminderTimes = listOf()
             ),
             HabitTrackerModel(
                 title = "Set Goals",
-                iconUrl = "R.drawable.ic_habit_brush",
+                iconUrl = "R.drawable.ic_habit_setgoals",
                 selectedDays = listOf(),
                 reminderTimes = listOf()
             ),
             HabitTrackerModel(
                 title = "Financial\nDiscipline",
-                iconUrl = "R.drawable.ic_habit_brush",
+                iconUrl = "R.drawable.ic_habit_financial",
                 selectedDays = listOf(),
                 reminderTimes = listOf()
             ),

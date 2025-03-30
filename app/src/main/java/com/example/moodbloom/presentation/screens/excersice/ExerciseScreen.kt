@@ -1,21 +1,20 @@
 package com.example.moodbloom.presentation.screens.excersice
 
-import android.content.Context
-import android.media.AudioAttributes
 import android.media.MediaPlayer
-import android.net.Uri
-import android.speech.tts.TextToSpeech.OnUtteranceCompletedListener
-import android.speech.tts.UtteranceProgressListener
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.EaseOutQuad
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -26,9 +25,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -40,6 +43,7 @@ import com.example.moodbloom.utils.extension.SpacerHeight
 import com.example.moodbloom.utils.extension.SpacerWidth
 import com.example.moodbloom.utils.extension.formatTime
 import com.example.moodbloom.presentation.components.CardContainer
+import com.example.moodbloom.presentation.components.PromptTypeShow
 import com.example.moodbloom.presentation.components.PromptsViewModel
 import com.example.moodbloom.presentation.components.ResourceImage
 import com.example.moodbloom.presentation.components.ScreenContainer
@@ -53,6 +57,7 @@ import com.example.moodbloom.ui.typo.DisplayLargeText
 import com.example.moodbloom.ui.typo.TitleLargeText
 import com.example.moodbloom.ui.typo.TitleMediumText
 import com.example.moodbloom.utils.TextToSpeechHelper
+import com.example.moodbloom.utils.extension.showToast
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -86,12 +91,18 @@ internal fun ExerciseScreen(
     val currentPrompt by promptsViewModel.currentPrompt.collectAsStateWithLifecycle()
     var isCompleted by remember { mutableStateOf(false) }
     var isStarted by remember { mutableStateOf(false) }
+    var isVisibleLetsStart by remember { mutableStateOf(false) }
 
-    val mediaPlayer = MediaPlayer()
-    DisposableEffect(Unit) {
-        onDispose {
-         mediaPlayer.stop()
-        }}
+
+    LaunchedEffect(isVisibleLetsStart) {
+        if (isVisibleLetsStart){
+            delay(1000)
+            isVisibleLetsStart = false
+        }
+
+    }
+    var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
+    var isPlaying by remember { mutableStateOf(false) }
     var isTextToVoiceRunning by remember { mutableStateOf(false) }
 
     var timeLeft by remember { mutableStateOf((selectedExerciseType?.timerMinutes ?: 0) * 60) }
@@ -107,6 +118,11 @@ internal fun ExerciseScreen(
     val coroutineScope = rememberCoroutineScope()
     fun startCountdown() {
         isStarted = true
+        if (configurationModel.enableRelaxingSound) {
+            playSuccessTune(
+                mediaPlayer = mediaPlayer
+            )
+        }
         if (!isRunning) {
             isRunning = true
             isCompleted = false
@@ -117,16 +133,33 @@ internal fun ExerciseScreen(
                 }
                 isRunning = false
                 isCompleted = true
-                if (configurationModel.isEnableRelaxingSound) {
-                    mediaPlayer.stop()
+                if (configurationModel.enableRelaxingSound) {
+                    mediaPlayer?.stop()
                 }
             }
         }
     }
-    val textToSpeechHelper = remember { TextToSpeechHelper(context){
+    val textToSpeechHelper = remember { TextToSpeechHelper(context,onInitialize = {it->
+        if (!it){
+            context.showToast("Failed to initialize text to speech on your device")
+        }
+        promptsViewModel.updatePrompt(null)
+    }){
         isTextToVoiceRunning = false
+        isVisibleLetsStart=true
         startCountdown()
-    } }
+    }
+    }
+    DisposableEffect(Unit) {
+        mediaPlayer = MediaPlayer.create(context, R.raw.relax_music) // Replace with your actual music file
+        onDispose {
+            textToSpeechHelper.shutdown()
+            mediaPlayer?.stop()
+            mediaPlayer?.release()
+            mediaPlayer = null
+            isPlaying = false
+        }
+    }
     ScreenContainer(currentPrompt = currentPrompt) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -234,17 +267,11 @@ internal fun ExerciseScreen(
                             .padding(horizontal = 10.sdp),
                         text = "Start",
                         onClick = {
-                            if (configurationModel.isEnableVoiceGuidance) {
+                            if (configurationModel.enableVoiceGuidance) {
                                 isTextToVoiceRunning = true
-                                textToSpeechHelper.speak(textToSpeak)
+                                textToSpeechHelper.speak(textToSpeak,context)
                             } else {
                                 startCountdown()
-                            }
-                            if (configurationModel.isEnableRelaxingSound) {
-                                playSuccessTune(
-                                    context = context,
-                                    mediaPlayer = mediaPlayer
-                                )
                             }
                         })
                 } else if (isCompleted && !isRunning && !isTextToVoiceRunning) {
@@ -255,9 +282,6 @@ internal fun ExerciseScreen(
                         text = "Restart",
                         onClick = {
                             timeLeft = selectedExerciseType?.timerMinutes ?: 0
-                            if (configurationModel.isEnableRelaxingSound) {
-                                playSuccessTune(context = context, mediaPlayer = mediaPlayer)
-                            }
                             startCountdown()
                         })
                 } else if (isRunning && !isTextToVoiceRunning) {
@@ -268,8 +292,8 @@ internal fun ExerciseScreen(
                         primary = false,
                         text = "Stop",
                         onClick = {
-                            if (configurationModel.isEnableRelaxingSound) {
-                                mediaPlayer.stop()
+                            if (configurationModel.enableRelaxingSound) {
+                                mediaPlayer?.stop()
                             }
                             onBackClick()
                         })
@@ -277,37 +301,54 @@ internal fun ExerciseScreen(
             }
             SpacerHeight(5.hpr)
         }
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            if (isVisibleLetsStart) {
+                AnimatedText("Let's Start")
+            }
+        }
+    }
+    LaunchedEffect(Unit) {
+        promptsViewModel.updatePrompt(PromptTypeShow.Loading())
     }
 }
 
 
-fun playSuccessTune(context: Context, mediaPlayer: MediaPlayer) {
-    try {
-        val notificationSoundUri = Uri.parse(
-            "android.resource://" + context.packageName + "/" + R.raw.relax_music
-        )
-
-        mediaPlayer.reset()
-        mediaPlayer.setAudioAttributes(
-            AudioAttributes.Builder()
-                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-                .build()
-        )
-        mediaPlayer.setDataSource(context, notificationSoundUri)
-        mediaPlayer.prepareAsync()
-        mediaPlayer.setOnPreparedListener { mp ->
-            mp.start()
+fun playSuccessTune(mediaPlayer: MediaPlayer?) {
+    mediaPlayer?.let {
+        try {
+          it.start()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        mediaPlayer.setOnCompletionListener { mp ->
-            mp.reset()
-        }
-
-    } catch (e: Exception) {
-        e.printStackTrace()
     }
+
 }
 
+
+@Composable
+fun AnimatedText(text: String) {
+    val alphaAnim = remember { Animatable(0.1f) }
+    val scaleAnim = remember { Animatable(0.5f) }
+
+    LaunchedEffect(Unit) {
+        alphaAnim.animateTo(1f, animationSpec = tween(300))
+        scaleAnim.animateTo(1f, animationSpec = tween(300, easing = EaseOutQuad))
+        delay(500)
+        alphaAnim.animateTo(0f, animationSpec = tween(500))
+    }
+
+    Text(
+        text = text,
+        fontSize = 36.sp,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier
+            .scale(scaleAnim.value)
+            .alpha(alphaAnim.value)
+    )
+}
 @Preview(showBackground = true)
 @Composable
 fun ExerciseScreenPreview() {

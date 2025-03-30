@@ -57,7 +57,6 @@ fun SignUpScreenRoute(
     val userState by viewModel.userState.collectAsStateWithLifecycle()
     SignUpScreen(
         onRegisterSuccess = {
-            mainViewModel.firebaseUser=it.firebaseUser
             mainViewModel.userModel=it
             viewModel.clearState()
             onNavigate(ScreensRoute.Home.route)

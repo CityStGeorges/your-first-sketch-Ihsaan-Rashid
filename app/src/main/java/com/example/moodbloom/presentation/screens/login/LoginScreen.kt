@@ -1,5 +1,6 @@
 package com.example.moodbloom.presentation.screens.login
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -53,10 +54,10 @@ fun LoginScreenRoute(
     val userState by viewModel.userState.collectAsStateWithLifecycle()
     LoginScreen(
         onLoginSuccess = {
-            mainViewModel.firebaseUser = it.firebaseUser
             mainViewModel.userModel = it
-            viewModel.clearState()
+            Log.d("LoginScreenRoute", "LoginScreenRoute: ${it.fullName} && ${it.uid}")
             onNavigate(ScreensRoute.Home.route)
+            viewModel.clearState()
         }, userState = userState,
         onLoginRequest = viewModel::loginUser
     )

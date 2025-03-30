@@ -7,12 +7,13 @@ import android.speech.tts.UtteranceProgressListener
 import android.util.Log
 import java.util.Locale
 
-class TextToSpeechHelper(context: Context, private val onComplete: (() -> Unit)? = null) {
+class TextToSpeechHelper(context: Context,  onInitialize: ((Boolean) -> Unit), private val onComplete: (() -> Unit)? = null) {
     private var textToSpeech: TextToSpeech? = null
 
     init {
         textToSpeech = TextToSpeech(context) { status ->
             if (status == TextToSpeech.SUCCESS) {
+                onInitialize(true)
                 textToSpeech?.language = Locale.US
                 textToSpeech?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
                     override fun onStart(utteranceId: String?) {
@@ -29,16 +30,42 @@ class TextToSpeechHelper(context: Context, private val onComplete: (() -> Unit)?
                     }
                 })
             } else {
+                onInitialize(false)
                 Log.e("TTS", "Initialization failed!")
             }
         }
     }
 
-    fun speak(text: String) {
-        val params = HashMap<String, String>()
-        params[TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID] = "UniqueID"
-        textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, params)
+    fun speak(text: String,context: Context) {
+        if (textToSpeech == null) {
+            // Reinitialize TTS if it was shut down
+            textToSpeech = TextToSpeech(context) { status ->
+                if (status == TextToSpeech.SUCCESS) {
+                    textToSpeech?.language = Locale.US
+                    textToSpeech?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+                        override fun onStart(utteranceId: String?) {
+                            Log.d("TTS", "Speech started")
+                        }
+
+                        override fun onDone(utteranceId: String?) {
+                            Log.d("TTS", "Speech completed")
+                            onComplete?.invoke()
+                        }
+
+                        override fun onError(utteranceId: String?) {
+                            Log.e("TTS", "Speech error")
+                        }
+                    })
+                    textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "UniqueID")
+                } else {
+                    Log.e("TTS", "Reinitialization failed!")
+                }
+            }
+        } else {
+            textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "UniqueID")
+        }
     }
+
 
     fun shutdown() {
         textToSpeech?.stop()

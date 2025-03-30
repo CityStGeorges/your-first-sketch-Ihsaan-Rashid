@@ -2,6 +2,7 @@ package com.example.moodbloom.presentation.screens.moodtrends
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.yml.charts.common.model.Point
 import com.example.moodbloom.domain.models.ChartDataModel
 import com.example.moodbloom.domain.models.LogMoodsResponseModel
 import com.example.moodbloom.domain.models.auth.UserModel
@@ -11,8 +12,8 @@ import com.example.moodbloom.domain.usecases.openai.GenerateMoodsInsightsUseCase
 import com.example.moodbloom.utils.extension.ChartType
 import com.example.moodbloom.utils.extension.MoodType
 import com.example.moodbloom.utils.extension.ResponseStates
+import com.example.moodbloom.utils.extension.isNotNullOrBlank
 import com.example.moodbloom.utils.extension.onSuccess
-import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,6 +38,21 @@ class MoodsTrendsViewModel @Inject constructor(
     private val _chartData: MutableStateFlow<List<ChartDataModel>> = MutableStateFlow(listOf())
     val chartData: StateFlow<List<ChartDataModel>> = _chartData.asStateFlow()
 
+    private val _pointsData: MutableStateFlow<List<Point>> = MutableStateFlow(listOf())
+    val pointsData: StateFlow<List<Point>> = _pointsData.asStateFlow()
+
+
+    // Function to get labels dynamically
+    /* val pointsData: List<Point> = chartData.mapIndexed { index, dateModel ->
+         Log.d("MoodScore","${dateModel.modeScore.toFloat()}")
+         Point(
+             index.toFloat(),
+             dateModel.modeScore.toFloat()
+         )
+     }
+ */
+
+
     private val _listLogMoodState =
         MutableStateFlow<ResponseStates<List<LogMoodsResponseModel>>>(ResponseStates.Idle)
     val listLogMoodState: StateFlow<ResponseStates<List<LogMoodsResponseModel>>> = _listLogMoodState
@@ -44,24 +60,62 @@ class MoodsTrendsViewModel @Inject constructor(
 
     fun getUserAllMoodLogList(firebaseUser: UserModel?) {
         viewModelScope.launch {
-            _listLogMoodState.value = ResponseStates.Loading
-            _listLogMoodState.value = getUserAllMoodLogListUseCase.invoke(firebaseUser?.uid?:"").onSuccess {
-                listMoodComplete = it
-               getChartData(chartType = ChartType.DAILY,firebaseUser?.fullName?:"")
+            if (firebaseUser?.uid.isNotNullOrBlank()) {
+                _listLogMoodState.value = ResponseStates.Loading
+                _listLogMoodState.value =
+                    getUserAllMoodLogListUseCase.invoke(firebaseUser?.uid ?: "").onSuccess {
+                        listMoodComplete = it
+                        getChartData(chartType = ChartType.DAILY, firebaseUser?.fullName ?: "")
+                    }
             }
         }
     }
 
 
-    fun getChartData(chartType: ChartType, userName:String) {
+    fun getChartData(chartType: ChartType, userName: String) {
         val today = LocalDate.now()
-        _chartData.value =  when (chartType) {
+        _chartData.value = when (chartType) {
             ChartType.DAILY -> getDailyData(listMoodComplete, today)
             ChartType.WEEKLY -> getWeeklyData(listMoodComplete, today)
             ChartType.MONTHLY -> getMonthlyData(listMoodComplete, today)
         }
-        generateMoodsInsights(userName,lastDays=chartType.value)
+        val listPoints: MutableList<Point> = mutableListOf()
+        listPoints.add(
+            Point(
+                0f,
+                0f
+            )
+        )
+        listPoints.add(
+            Point(
+                0f,
+                6f
+            )
+        )
+        chartData.value.forEachIndexed { index, chartDataModel ->
+            listPoints.add(
+                Point(
+                    index.toFloat(),
+                    chartDataModel.modeScore.toFloat()
+                )
+            )
+        }
+        _pointsData.value = listPoints
+
+        //generateMoodsInsights(userName,lastDays=chartType.value)
+        /*_pointsData.value =  listOf(
+            Point(0f, 6f), // Monday
+            Point(0f, 0f), // Monday
+            Point(0f, 4f), // Monday
+            Point(1f, 3f), // Tuesday
+            Point(2f, 2f), // Wednesday
+            Point(3f, 4f), // Thursday
+            Point(4f, 3f), // Friday
+            Point(5f, 5f), // Saturday
+            Point(6f, 0f)  // Sunday
+        )*/
     }
+
 
     private fun getDailyData(
         logMoods: List<LogMoodsResponseModel>, today: LocalDate
@@ -84,7 +138,8 @@ class MoodsTrendsViewModel @Inject constructor(
                 modeType = logMood?.type ?: MoodType.NORMAL.type,
                 modeScore = logMood?.moodScore ?: MoodType.NORMAL.moodScore,
                 label = date.format(dayFormatter),
-                weekOfYear = date.get(WeekFields.of(Locale.getDefault()).weekOfYear())
+                weekOfYear = date.get(WeekFields.of(Locale.getDefault()).weekOfYear()),
+                aboutMood = logMood?.aboutMood ?: ""
             )
         }
     }
@@ -111,7 +166,8 @@ class MoodsTrendsViewModel @Inject constructor(
                 modeType = avgMoodScore.getMoodTypeFromScore().type,
                 modeScore = avgMoodScore,
                 label = "W-${weekDate.get(WeekFields.of(Locale.getDefault()).weekOfYear())}",
-                weekOfYear = weekDate.get(WeekFields.of(Locale.getDefault()).weekOfYear())
+                weekOfYear = weekDate.get(WeekFields.of(Locale.getDefault()).weekOfYear()),
+                aboutMood = ""
             )
         }
     }
@@ -138,37 +194,26 @@ class MoodsTrendsViewModel @Inject constructor(
                 modeType = avgMoodScore.getMoodTypeFromScore().type,
                 modeScore = avgMoodScore,
                 label = monthDate.format(formatMonth),
-                weekOfYear = monthDate.get(WeekFields.of(Locale.getDefault()).weekOfYear())
+                weekOfYear = monthDate.get(WeekFields.of(Locale.getDefault()).weekOfYear()),
+                aboutMood = ""
             )
         }
     }
-
-
-    fun Int.getMoodTypeFromScore(): MoodType {
-        return when (this) {
-            6 -> MoodType.VHAPPY
-            5 -> MoodType.HAPPY
-            4 -> MoodType.NORMAL
-            3 -> MoodType.UNCERTAIN
-            2 -> MoodType.SAD
-            1 -> MoodType.VSAD
-            0 -> MoodType.ANGRY
-            else -> MoodType.NORMAL
-        }
-    }
-
-
 
 
     private val _generateMoodsInsightsState =
         MutableStateFlow<ResponseStates<String>>(ResponseStates.Idle)
     val generateMoodsInsightsState: StateFlow<ResponseStates<String>> = _generateMoodsInsightsState
 
-    fun generateMoodsInsights(userName: String,lastDays:String) {
+    fun generateMoodsInsights(userName: String, lastDays: String) {
         viewModelScope.launch {
-            if (chartData.value.isNotEmpty()){
+            if (chartData.value.isNotEmpty()) {
                 _generateMoodsInsightsState.value = ResponseStates.Loading
-                _generateMoodsInsightsState.value = generateMoodsInsightsUseCase.invoke(userName=userName,lastDays=lastDays,chartData.value)
+                _generateMoodsInsightsState.value = generateMoodsInsightsUseCase.invoke(
+                    userName = userName,
+                    lastDays = lastDays,
+                    chartData.value
+                )
             }
         }
     }
@@ -181,3 +226,15 @@ class MoodsTrendsViewModel @Inject constructor(
 }
 
 
+fun Int.getMoodTypeFromScore(): MoodType {
+    return when (this) {
+        6 -> MoodType.VHAPPY
+        5 -> MoodType.HAPPY
+        4 -> MoodType.NORMAL
+        3 -> MoodType.UNCERTAIN
+        2 -> MoodType.SAD
+        1 -> MoodType.VSAD
+        0 -> MoodType.ANGRY
+        else -> MoodType.NORMAL
+    }
+}

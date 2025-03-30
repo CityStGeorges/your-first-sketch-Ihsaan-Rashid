@@ -51,7 +51,6 @@ fun WelcomeScreenRoute(
 
     val userState by viewModel.userState.collectAsStateWithLifecycle()
     WelcomeScreen(onLoginSuccess = {
-        mainViewModel.firebaseUser = it.firebaseUser
         mainViewModel.userModel = it
         viewModel.clearState()
         onNavigate(ScreensRoute.Home.route)

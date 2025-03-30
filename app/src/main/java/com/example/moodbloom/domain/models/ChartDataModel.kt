@@ -13,4 +13,5 @@ data class ChartDataModel(
     val modeScore: Int,
     val weekOfYear: Int,
     val label: String ="",
+    val aboutMood: String,
 )

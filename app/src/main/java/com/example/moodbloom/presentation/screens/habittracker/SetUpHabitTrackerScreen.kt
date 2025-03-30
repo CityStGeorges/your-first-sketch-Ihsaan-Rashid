@@ -73,7 +73,7 @@ fun SetUpHabitTrackerRoute(
             viewModel.clearStates()
             onNavigate()
         },
-        userId = mainViewModel.firebaseUser?.uid ?: "",
+        userId = mainViewModel.userModel?.uid ?: "",
         insertNewHabit = viewModel::insertHabit,
         onBackClick = onBackClick
     )
